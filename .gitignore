@@ -1,3 +1,8 @@
+# [dev tools] Map Editor
+DEV/map_editor/graph.json
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
