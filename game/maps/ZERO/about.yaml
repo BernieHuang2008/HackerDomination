@@ -1,0 +1,15 @@
+name: "ZERO"
+subtitle: "The beginning of the end (PS: Actually, I don't know what it means, either.)"
+description: "The first map of the Hacker Domination series. It is a small map with 4 capitals and 4 cities. It is a good map for beginners to learn the basics of the game."
+
+tips:
+  - "You must conquer others to expand your empire."
+  - "Capitals are the hardest. But once dominated, the empire is destroyed."
+
+cities: [
+    "DDoS", # Capital
+    "Social Engineering",
+    "Password Cracking",
+    "Network Scanning",
+    "Malware Attacks",
+  ]

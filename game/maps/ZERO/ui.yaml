@@ -1,0 +1,25 @@
+background: "bg.png"
+
+map:
+  background: "mapbg.png"
+  textColor: "#fff"
+  city:
+    ordinary:
+      color: "#69a5d0"
+      border: "#2b3e7a"
+      borderWidth: 1
+      radius: 7
+    capital:
+      color: "#d4be73"
+      border: "#69a5d0"
+      borderWidth: 2
+      radius: 13
+    captured:
+      color: "#89ffbf"
+      border: "#69a5d0"
+      borderWidth: 1
+      radius: 7
+  road:
+    color: "#999"
+    width: 3
+
