@@ -65,7 +65,7 @@ class Graph:
             "edges": [e.json() for e in self.edges],
         }
 
-    def draw(self, canvas=None, offset=(0, 0), clearprev=True):
+    def draw(self, canvas=None, clearprev=True, offset=(0, 0), scale=1):
         if canvas is None:
             canvas = self.canvas
         else:
@@ -79,10 +79,10 @@ class Graph:
             source = self.nodes[edge.source]
             target = self.nodes[edge.target]
             canvas.create_line(
-                source.pos[0] + offset[0],
-                source.pos[1] + offset[1],
-                target.pos[0] + offset[0],
-                target.pos[1] + offset[1],
+                source.pos[0] * scale + offset[0],
+                source.pos[1] * scale + offset[1],
+                target.pos[0] * scale + offset[0],
+                target.pos[1] * scale + offset[1],
                 width=SETTINGS["edge_width"],
                 fill=SETTINGS["edge_color"],
             )
@@ -104,20 +104,20 @@ class Graph:
                 color = SETTINGS["node_color"]
 
             canvas.create_oval(
-                node.pos[0] + offset[0] - r,
-                node.pos[1] + offset[1] - r,
-                node.pos[0] + offset[0] + r,
-                node.pos[1] + offset[1] + r,
+                (node.pos[0] - r) * scale + offset[0],
+                (node.pos[1] - r) * scale + offset[1],
+                (node.pos[0] + r) * scale + offset[0],
+                (node.pos[1] + r) * scale + offset[1],
                 fill=color,
                 outline=sc,
                 width=SETTINGS["border_width"],
             )
             canvas.create_text(
-                node.pos[0] + offset[0],
-                node.pos[1] + offset[1] + r + ts,
+                node.pos[0] * scale + offset[0],
+                (node.pos[1] + r + ts) * scale + offset[1],
                 text=name,
                 fill=SETTINGS["text_color"],
-                font=(tf, ts),
+                font=(tf, ts * scale),
             )
 
         canvas.update()
@@ -139,10 +139,7 @@ def find_node(g: Graph, x, y) -> str:
     r = SETTINGS["node_size"] / 2
     nodes = []
     for name, node in g.nodes.items():
-        if (
-            abs(x - node.pos[0]) <= 2 * r
-            and abs(y - node.pos[1]) <= 2 * r
-        ):
+        if abs(x - node.pos[0]) <= 2 * r and abs(y - node.pos[1]) <= 2 * r:
             nodes.append(name)
 
     if len(nodes) == 1:
