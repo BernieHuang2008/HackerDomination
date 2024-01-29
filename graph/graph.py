@@ -3,9 +3,13 @@ import json
 SETTINGS = {
     "node_size": 10,
     "node_color": "blue",
+    "border_color": "black",
     "edge_color": "black",
+    "border_width": 1,
     "edge_width": 1,
     "text_size": 12,
+    "text_color": "black",
+    "text_family": "Arial",
 }
 
 
@@ -61,39 +65,60 @@ class Graph:
             "edges": [e.json() for e in self.edges],
         }
 
-    def draw(self, canvas=None):
+    def draw(self, canvas=None, offset=(0, 0), clearprev=True):
         if canvas is None:
             canvas = self.canvas
         else:
             self.canvas = canvas
 
-        # Clear the canvas
-        canvas.delete("all")
+        if clearprev:
+            canvas.delete("all")
 
         # Draw edges first
         for edge in self.edges:
             source = self.nodes[edge.source]
             target = self.nodes[edge.target]
             canvas.create_line(
-                source.pos[0], source.pos[1], target.pos[0], target.pos[1]
+                source.pos[0] + offset[0],
+                source.pos[1] + offset[1],
+                target.pos[0] + offset[0],
+                target.pos[1] + offset[1],
+                width=SETTINGS["edge_width"],
+                fill=SETTINGS["edge_color"],
             )
 
         # Draw nodes second
         for name, node in self.nodes.items():
+            c = "custom" in node.properties
+
+            if c:
+                SETTINGS.update(node.properties["custom"])
+
             r = SETTINGS["node_size"] / 2
             ts = SETTINGS["text_size"]
-            if "capital" in node.properties and node['capital'] is True:
+            tf = SETTINGS["text_family"]
+            sc = SETTINGS["border_color"]
+            if node.properties.get("capital", False) and not c:
                 color = "yellow"
             else:
                 color = SETTINGS["node_color"]
+
             canvas.create_oval(
-                node.pos[0] - r,
-                node.pos[1] - r,
-                node.pos[0] + r,
-                node.pos[1] + r,
+                node.pos[0] + offset[0] - r,
+                node.pos[1] + offset[1] - r,
+                node.pos[0] + offset[0] + r,
+                node.pos[1] + offset[1] + r,
                 fill=color,
+                outline=sc,
+                width=SETTINGS["border_width"],
             )
-            canvas.create_text(node.pos[0], node.pos[1] + r + ts, text=name)
+            canvas.create_text(
+                node.pos[0] + offset[0],
+                node.pos[1] + offset[1] + r + ts,
+                text=name,
+                fill=SETTINGS["text_color"],
+                font=(tf, ts),
+            )
 
         canvas.update()
 
@@ -108,3 +133,29 @@ class Graph:
 
     def add_edge(self, source: str, target: str):
         self.edges.append(Edge({"source": source, "target": target}))
+
+
+def find_node(g: Graph, x, y) -> str:
+    r = SETTINGS["node_size"] / 2
+    nodes = []
+    for name, node in g.nodes.items():
+        if (
+            abs(x - node.pos[0]) <= 2 * r
+            and abs(y - node.pos[1]) <= 2 * r
+        ):
+            nodes.append(name)
+
+    if len(nodes) == 1:
+        return nodes[0]
+    elif len(nodes) > 1:
+        # select the node with the smallest distance
+        min_dist = float("inf")
+        min_node = None
+        for node in nodes:
+            dist = abs(x - g.nodes[node].pos[0]) + abs(y - g.nodes[node].pos[1])
+            if dist < min_dist:
+                min_dist = dist
+                min_node = node
+        return min_node
+    else:
+        return None

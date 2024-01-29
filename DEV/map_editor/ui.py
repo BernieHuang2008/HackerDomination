@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath('../../'))
 print(sys.path)
 if 1:
     from graph import Graph
+    from graph import find_node
 
 SETTINGS = {
     "node_size": 10,
@@ -118,29 +119,6 @@ def add_node(event, g: Graph):
 
 
 selected_nodes = []
-
-
-def find_node(g: Graph, x, y) -> str:
-    r = SETTINGS["node_size"] / 2
-    nodes = []
-    for name, node in g.nodes.items():
-        if abs(x - node.pos[0]) <= 2 * r and abs(y - node.pos[1]) <= 2 * r:
-            nodes.append(name)
-
-    if len(nodes) == 1:
-        return nodes[0]
-    elif len(nodes) > 1:
-        # select the node with the smallest distance
-        min_dist = float("inf")
-        min_node = None
-        for node in nodes:
-            dist = abs(x - g.nodes[node].pos[0]) + abs(y - g.nodes[node].pos[1])
-            if dist < min_dist:
-                min_dist = dist
-                min_node = node
-        return min_node
-    else:
-        return None
 
 
 def select_node(event, g: Graph):
