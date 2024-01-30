@@ -21,13 +21,25 @@ def check_pass():
 
 def shell(cmd):
     print(f"Command: {cmd}")
+    print(f"Sub-command: ", end='')
 
+    def sub_want_input(s):
+        print(f"Sub-command received: {s}")
+        
+        # Ask
+        print(
+            f"\033[1;32m{SESSION['prof']['name']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
+            end="",
+        )
+
+    input(sub_want_input)
 
 
 def start():
     global print, input
 
     import terminal
+
     terminal.api["process"] = shell
 
     # APIs

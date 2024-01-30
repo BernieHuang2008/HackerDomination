@@ -173,26 +173,25 @@ def forbid_input():
 
 
 def fake_input(callback):
-    def f_input(s):
-        # Restore processor
+    def fake_cb(s):
+        # Restore
         api["process"] = bk_processor
-
-        # Close input
         forbid_input()
 
         # Call callback
         callback(s)
 
+    # Start input
     allow_input()
     bk_processor = api["process"]
-    api["process"] = f_input
+    api["process"] = fake_cb
 
 
 api = {
     # Provided
     "ch-title": lambda s: window.title(s),
     "print": fake_print,
-    "input": lambda: fake_input,
+    "input": fake_input,
     "clear": lambda: text.delete("1.0", END),
     "mainloop": window.mainloop,
     "input-allow": allow_input,
