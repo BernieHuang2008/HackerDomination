@@ -3,25 +3,30 @@ import re
 
 # Create a new Tkinter window
 window = Tk()
-window.title("Shell-Like Window")
+window.title("Terminal - Hacker Domination")
 
-# Create a new Text widget with a black background and white text
+# Create Text widget as terminal window
 text = Text(window, bg="black", fg="white")
 text.pack(fill="both", expand=True)
 
 text.configure(insertbackground="white", font=("Consolas", 12))
 
 
-def fake_print(s):
+def fake_print(s, end="\n"):
     def get_lc(content, pos):
-        """Get line and column of a position in the content"""
+        """
+        Get line (l) and column (c) of a position in the content
+        """
         line = content[:pos].count("\n")
         col = pos - content[:pos].rfind("\n") - 1
         return line, col
 
-    content, styles = dash033(s)
+    # Process 033
+    content, styles = dash033(s + end)
+    cline, ccol = map(int, text.index("insert").split(".")) # backup
     text.insert(END, content)
 
+    # Color & Print
     for i in range(len(styles)):
         s1 = styles[i]
         s2 = styles[i + 1] if i + 1 < len(styles) else None
@@ -32,7 +37,6 @@ def fake_print(s):
         # Get line and column
         line1, col1 = get_lc(content, pos1)
         line2, col2 = get_lc(content, pos2)
-        cline, ccol = map(int, text.index("insert").split("."))
 
         # Add Tags
         tname = f"style_{style['fg']}_{style['bg']}_{style['bold']}"
@@ -50,15 +54,20 @@ def fake_print(s):
             font=("Consolas", 12, "bold" if style["bold"] else "normal"),
         )
 
+    # Set forbid delete
+    global forbid_delete
+    cline, ccol = map(int, text.index("insert").split("."))
+    forbid_delete = ccol
+
 
 def dash033(content):
     def process_color_code(s):
         codesheet = {
             0: "black",
             1: "red",
-            2: "#23d18b",   # green
+            2: "#23d18b",  # green
             3: "yellow",
-            4: "#3b8eea",   # blue
+            4: "#3b8eea",  # blue
             5: "magenta",
             6: "cyan",
             7: "white",
@@ -118,33 +127,78 @@ def dash033(content):
     return content, styles
 
 
-# Function to handle input
 def handle_input(event):
-    # Get the current line
+    global forbid_delete
+
+    # Stop input
+    forbid_input()
+
+    # Get current line
     line = text.get("insert linestart", "insert lineend")
-    # You can process the input here
-    print(f"You entered: {line}")
-    # Insert a new line
+    uinput = line[forbid_delete:]
+
+    # New Line
     text.insert("insert", "\n")
-    fake_print("hello\n")
-    fake_print(f"\033[1;32mhacker@Empire\033[0m:\033[1;34m/home/hacker\033[0m$ ")
+
+    # Process
+    api["process"](uinput)
+
+    # Resume input
+    allow_input()
     return "break"
 
 
 def handle_backspace(event):
-    # Get the current line and column
-    line, column = map(int, text.index("insert").split("."))
-    # If the cursor is not at the start of a line
-    if column > 0:
-        # Delete the previous character
+    global forbid_delete
+
+    # Get current line and column
+    line, col = map(int, text.index("insert").split("."))
+
+    if col > forbid_delete:
         text.delete("insert-1c")
 
     return "break"
 
 
-# Bind the Return key to the handle_input function
-text.bind("<Return>", handle_input)
-text.bind("<BackSpace>", handle_backspace)
+def allow_input():
+    text.unbind("<Key>")
+    text.bind("<Return>", handle_input)
+    text.bind("<BackSpace>", handle_backspace)
 
-# Start the Tkinter event loop
-window.mainloop()
+
+def forbid_input():
+    text.bind("<Key>", lambda e: "break")
+    text.unbind("<Return>")
+    text.unbind("<BackSpace>")
+
+
+def fake_input(callback):
+    def f_input(s):
+        # Restore processor
+        api["process"] = bk_processor
+
+        # Close input
+        forbid_input()
+
+        # Call callback
+        callback(s)
+
+    allow_input()
+    bk_processor = api["process"]
+    api["process"] = f_input
+
+
+api = {
+    # Provided
+    "ch-title": lambda s: window.title(s),
+    "print": fake_print,
+    "input": lambda: fake_input,
+    "clear": lambda: text.delete("1.0", END),
+    "mainloop": window.mainloop,
+    "input-allow": allow_input,
+    "input-forbid": forbid_input,
+    "exit": lambda: [window.destroy(), window.quit()],
+    # Required
+    "process": None,
+}
+forbid_input()
