@@ -4,6 +4,8 @@ import tkinter as tk
 from graph import Graph
 from graph import graph_py
 
+import ui.game_preview as game_preview
+
 SETTINGS = {
     "textSize": 12,
     "widget": {
@@ -87,6 +89,7 @@ def display_widgets(canvas, root):
     """
 
     def f_return():
+        # TODO: return to the previous page
         root.destroy()
         root.quit()
 
@@ -99,6 +102,7 @@ def display_widgets(canvas, root):
 
     for i in range(len(widgets)):
         name, func = widgets[i]
+
         # Draw the widget
         x1, y1, x2, y2 = widget_rect(i)
         canvas.create_rectangle(x1, y1, x2, y2, outline=settings["border"], width=3)
@@ -116,8 +120,11 @@ def onclick(e):
     Handle the click event.
     """
     x, y = e.x, e.y
+    sx = (x - 150) / storage["scale"]
+    sy = y / storage["scale"]
 
     # Check for widgets
+    # widgets won't be scaled, so no need to scale back
     for i in range(len(widgets)):
         x1, y1, x2, y2 = widget_rect(i)
         if x1 <= x <= x2 and y1 <= y <= y2:
@@ -125,12 +132,12 @@ def onclick(e):
             return
 
     # Check for nodes
-    target = graph_py.find_node(graph, x - 150, y)  # remove offset
+    target = graph_py.find_node(graph, sx, sy)  # remove offset
     if target is not None:
+        # TODO: display the game preview
         ...
-        if target not in PROGRESS["captured"]:
-            PROGRESS["captured"].append(target)
-            display(storage["canvas"], storage["root"])
+        PROGRESS["captured"].append(target)
+        display(storage["canvas"], storage["root"])
 
 
 def display(canvas, root):
@@ -141,16 +148,16 @@ def display(canvas, root):
     storage = {
         "canvas": canvas,
         "root": root,
+        "scale": 1000/600,
     }
 
     canvas.delete("all")
     apply_style()
 
+    # Draw
     display_bg(canvas)
-    graph.draw(canvas, offset=(150, 0), clearprev=False)
+    graph.draw(canvas, clearprev=False, offset=(150, 0), scale=storage["scale"])
     display_widgets(canvas, root)
-
-    return storage
 
 
 kingdom_dir = "game/maps/ZERO/"

@@ -87,13 +87,15 @@ class Graph:
                 fill=SETTINGS["edge_color"],
             )
 
-        # Draw nodes second
+        # Draw nodes secondly
         for name, node in self.nodes.items():
+            # Custom settings
             c = "custom" in node.properties
 
             if c:
                 SETTINGS.update(node.properties["custom"])
 
+            # Set style
             r = SETTINGS["node_size"] / 2
             ts = SETTINGS["text_size"]
             tf = SETTINGS["text_family"]
@@ -103,6 +105,7 @@ class Graph:
             else:
                 color = SETTINGS["node_color"]
 
+            # Draw node
             canvas.create_oval(
                 (node.pos[0] - r) * scale + offset[0],
                 (node.pos[1] - r) * scale + offset[1],
@@ -117,7 +120,7 @@ class Graph:
                 (node.pos[1] + r + ts) * scale + offset[1],
                 text=name,
                 fill=SETTINGS["text_color"],
-                font=(tf, ts * scale),
+                font=(tf, int(ts * scale)),
             )
 
         canvas.update()
