@@ -1,0 +1,7 @@
+(!) Warning: TOP SECRET
+
+just write down in case i forget.
+
+here are some useful Unix commands:
+  - login as any user, then use 'passwd' command to change its password.
+  - 'root' user cannot be logged in normally. Use 'sudo -s' to switch to 'root shell', that is, switch to 'root user'.

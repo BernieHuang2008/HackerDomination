@@ -1,14 +1,26 @@
+import shell
+import yaml
+
 SESSION = {
-    "prof": {"name": "Hacker1@Empire", "addr": "222.248.208.208"},
-    "dir": "/home/Hacker",
+    "prof": {"user": "guest", "name": "guest@PLee", "addr": "222.248.208.208"},
+    "dir": "/home/guest",
     "game": {
         "city": "Empire ZERO, Ciry of the Sun",
     },
 }
 
+OS = yaml.safe_load(open("data/os.yaml", "r", encoding="utf-8"))
 
-def init():
-    pass
+
+def init(*args):
+    # sync
+    shell.sync(SESSION, OS)
+
+    # sync APIs
+    shell.allow_input = args[0]
+    shell.forbid_input = args[1]
+    shell.print = args[2]
+    shell.input = args[3]
 
 
 def start_prepare():
@@ -19,28 +31,12 @@ def check_pass():
     pass
 
 
-def shell(cmd):
-    print(f"Command: {cmd}")
-    print(f"Sub-command: ", end='')
-
-    def sub_want_input(s):
-        print(f"Sub-command received: {s}")
-        
-        # Ask
-        print(
-            f"\033[1;32m{SESSION['prof']['name']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
-            end="",
-        )
-
-    input(sub_want_input)
-
-
 def start():
     global print, input
 
     import terminal
 
-    terminal.api["process"] = shell
+    terminal.api["process"] = shell.shell
 
     # APIs
     allow_input = terminal.api["input-allow"]
@@ -48,17 +44,20 @@ def start():
     print = terminal.api["print"]
     input = terminal.api["input"]
 
-    # Start Asking
-    print(
-        f"\033[1;32m{SESSION['prof']['name']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
-        end="",
+    # init shell
+    init(
+        allow_input,
+        forbid_input,
+        print,
+        input,
     )
-    allow_input()
 
+    # start shell
+    shell.start()
+
+    # start terminal
     terminal.api["mainloop"]()
 
 
 if __name__ == "__main__":
-    init()
-    start_prepare()
     start()

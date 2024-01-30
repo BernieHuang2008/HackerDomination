@@ -3,6 +3,7 @@ import re
 
 # Create a new Tkinter window
 window = Tk()
+window.geometry("960x540")  # Set the window size to hold 80x30 characters
 window.title("Terminal - Hacker Domination")
 
 # Create Text widget as terminal window
