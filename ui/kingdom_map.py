@@ -7,6 +7,7 @@ from graph import graph_py
 import ui.game_preview as game_preview
 
 SETTINGS = {
+    "scale": 1000/600,
     "textSize": 12,
     "widget": {
         "border": "#d4be73",
@@ -22,6 +23,8 @@ PROGRESS = {
     "captured": [],
 }
 
+
+storage = {}
 
 def load_ui(fname):
     with open(fname, "r") as f:
@@ -120,8 +123,8 @@ def onclick(e):
     Handle the click event.
     """
     x, y = e.x, e.y
-    sx = (x - 150) / storage["scale"]
-    sy = y / storage["scale"]
+    sx = (x - 150) / SETTINGS["scale"]
+    sy = y / SETTINGS["scale"]
 
     # Check for widgets
     # widgets won't be scaled, so no need to scale back
@@ -137,29 +140,32 @@ def onclick(e):
         # TODO: display the game preview
         ...
         PROGRESS["captured"].append(target)
-        display(storage["canvas"], storage["root"])
+        display()
 
 
-def display(canvas, root):
+def display(canvas=None, root=None):
     """
     Display the map.
     """
-    global storage
-    storage = {
-        "canvas": canvas,
-        "root": root,
-        "scale": 1000/600,
-    }
+    # Use default values
+    if "canvas" not in storage:
+        storage["canvas"] = canvas
+        storage["root"] = root
+    else:
+        canvas = canvas or storage["canvas"]
+        root = root or storage["root"]
 
+    # Clear
     canvas.delete("all")
-    apply_style()
 
     # Draw
+    apply_style()
     display_bg(canvas)
-    graph.draw(canvas, clearprev=False, offset=(150, 0), scale=storage["scale"])
+    graph.draw(canvas, clearprev=False, offset=(150, 0), scale=SETTINGS["scale"])
     display_widgets(canvas, root)
 
 
+# Load Map Settings (Just Temporary)
 kingdom_dir = "game/maps/ZERO/"
 load_ui(kingdom_dir + "ui.yaml")
 graph = Graph.from_json(kingdom_dir + "graph.json")
