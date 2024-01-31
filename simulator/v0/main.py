@@ -9,7 +9,7 @@ SESSION = {
     },
 }
 
-OS = yaml.safe_load(open("data/os.yaml", "r", encoding="utf-8"))
+OS = yaml.safe_load(open("simulator/v0/data/os.yaml", "r", encoding="utf-8"))
 
 
 def init(*args):

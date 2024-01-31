@@ -87,7 +87,7 @@ def cmd_cd(paras: str):
         return
 
     # check permission
-    if not fs.permited(SESSION["dir"], "x", SESSION["prof"]["user"]):
+    if not fs.ispermitted(SESSION["dir"], "x", SESSION["prof"]["user"]):
         print("Permission denied.")
         SESSION["dir"] = bk_dir
         return

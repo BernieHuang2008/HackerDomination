@@ -24,7 +24,7 @@ def fake_print(s, end="\n"):
 
     # Process 033
     content, styles = dash033(s + end)
-    cline, ccol = map(int, text.index("insert").split(".")) # backup
+    cline, ccol = map(int, text.index("insert").split("."))  # backup
     text.insert(END, content)
 
     # Color & Print
@@ -130,13 +130,20 @@ def dash033(content):
 
 def handle_input(event):
     global forbid_delete
+    global command_cursor
 
     # Stop input
     forbid_input()
 
+
     # Get current line
     line = text.get("insert linestart", "insert lineend")
     uinput = line[forbid_delete:]
+
+    # History
+    if uinput != "":
+        api["history"].append(uinput)
+        command_cursor = -1
 
     # New Line
     text.insert("insert", "\n")
@@ -155,22 +162,52 @@ def handle_backspace(event):
     # Get current line and column
     line, col = map(int, text.index("insert").split("."))
 
-    if col > forbid_delete:
-        text.delete("insert-1c")
+    if col <= forbid_delete:
+        return "break"
 
-    return "break"
+
+def handle_up(event):
+    global command_cursor
+    if command_cursor == 0:
+        return "break"
+    elif command_cursor == -1:
+        command_cursor = len(api["history"]) - 1
+        cline, ccol = map(int, text.index("insert").split("."))
+        text.delete(f"{cline}.{forbid_delete}", "insert lineend")
+        text.insert("insert", api["history"][command_cursor])
+        return "break"
+    else:
+        command_cursor -= 1
+        cline, ccol = map(int, text.index("insert").split("."))
+        text.delete(f"{cline}.{forbid_delete}", "insert lineend")
+        text.insert("insert", api["history"][command_cursor])
+        return "break"
+    
+def handle_down(event):
+    global command_cursor
+    if command_cursor == -1:
+        return "break"
+    elif command_cursor == len(api["history"]) - 1:
+        command_cursor = -1
+        cline, ccol = map(int, text.index("insert").split("."))
+        text.delete(f"{cline}.{forbid_delete}", "insert lineend")
+        return "break"
+    else:
+        command_cursor += 1
+        cline, ccol = map(int, text.index("insert").split("."))
+        text.delete(f"{cline}.{forbid_delete}", "insert lineend")
+        text.insert("insert", api["history"][command_cursor])
+        return "break"
 
 
 def allow_input():
-    text.unbind("<Key>")
-    text.bind("<Return>", handle_input)
-    text.bind("<BackSpace>", handle_backspace)
+    global g_allow_input
+    g_allow_input = True
 
 
 def forbid_input():
-    text.bind("<Key>", lambda e: "break")
-    text.unbind("<Return>")
-    text.unbind("<BackSpace>")
+    global g_allow_input
+    g_allow_input = False
 
 
 def fake_input(callback):
@@ -188,17 +225,36 @@ def fake_input(callback):
     api["process"] = fake_cb
 
 
+def clear():
+    global command_cursor
+    command_cursor = -1
+    api["history"] = []
+    text.delete("1.0", END)
+
+
+# Bind events
+text.bind("<Key>", lambda e: "break" if not g_allow_input else None)
+text.bind("<Return>", handle_input)
+text.bind("<BackSpace>", handle_backspace)
+text.bind("<Left>", handle_backspace)
+text.bind("<Up>", handle_up)
+text.bind("<Down>", handle_down)
+
+
 api = {
     # Provided
     "ch-title": lambda s: window.title(s),
     "print": fake_print,
     "input": fake_input,
-    "clear": lambda: text.delete("1.0", END),
+    "clear": clear,
     "mainloop": window.mainloop,
     "input-allow": allow_input,
     "input-forbid": forbid_input,
     "exit": lambda: [window.destroy(), window.quit()],
+    # Variables
+    "history": [],
     # Required
     "process": None,
 }
+command_cursor = -1
 forbid_input()
