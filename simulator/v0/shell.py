@@ -95,7 +95,14 @@ def cmd_cd(paras: str):
     # clean path
     SESSION["dir"] = fs.clean(SESSION["dir"])
 
+def cmd_clear(paras: str):
+    api["clear"]()
+
+def cmd_exit(paras: str):
+    api["exit"]()
 
 commands = {
     "cd": cmd_cd,
+    "clear": cmd_clear,
+    "exit": cmd_exit,
 }

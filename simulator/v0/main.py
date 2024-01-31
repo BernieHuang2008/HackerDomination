@@ -12,15 +12,16 @@ SESSION = {
 OS = yaml.safe_load(open("simulator/v0/data/os.yaml", "r", encoding="utf-8"))
 
 
-def init(*args):
+def init(api):
     # sync
     shell.sync(SESSION, OS)
 
     # sync APIs
-    shell.allow_input = args[0]
-    shell.forbid_input = args[1]
-    shell.print = args[2]
-    shell.input = args[3]
+    shell.api = api
+    shell.allow_input = api["input-allow"]
+    shell.forbid_input = api["input-forbid"]
+    shell.print = api["print"]
+    shell.input = api["input"]
 
 
 def start_prepare():
@@ -45,12 +46,7 @@ def start():
     input = terminal.api["input"]
 
     # init shell
-    init(
-        allow_input,
-        forbid_input,
-        print,
-        input,
-    )
+    init(terminal.api)
 
     # start shell
     shell.start()
