@@ -180,9 +180,70 @@ def cmd_ls(paras: str):
         print(" ".join(display))
 
 
+def cmd_cat(paras: str):
+    global SESSION
+
+    # Parse para
+    flags, paras = parse(paras)
+    if len(paras) == 0:
+        print("cat: missing file operand")
+        return
+    elif len(paras) > 1:
+        print("cat: too many arguments")
+        return
+
+    # get target file name
+    target = paras[0]
+    target = fs.join(SESSION["dir"], target)
+
+    # check
+    if not fs.access(target):
+        print("No such file or directory.")
+        return
+    if not fs.ispermitted(target, "r", SESSION["prof"]["user"]):
+        print("Permission denied.")
+        return
+    if not fs.isfile(target):
+        print("Target not a file.")
+        return
+
+    # print content
+    lines = fs.access(target).content.split("\n")
+
+    if 's' in flags:
+        for i in range(1, len(lines)):
+            if lines[i] == "" and lines[i-1] == "":
+                lines[i] = None
+        lines = list(filter(lambda x: x is not None, lines))
+    
+    if 'b' in flags:
+        nonblank = list(filter(lambda x: x != "", lines))
+        max_num_len = len(str(len(nonblank)))
+        for i in range(len(lines)):
+            if lines[i] != "":
+                lines[i] = str(i+1).rjust(max_num_len) + "  " + lines[i]
+            else:
+                lines[i] = " " * (max_num_len + 2) + lines[i]
+
+    elif 'n' in flags:
+        max_num_len = len(str(len(lines)))
+        for i in range(len(lines)):
+            lines[i] = str(i+1).rjust(max_num_len) + "  " + lines[i]
+
+    if 'E' in flags:
+        for i in range(len(lines)):
+            lines[i] += "$"
+            
+    if 'T' in flags:
+        for i in range(len(lines)):
+            lines[i] = lines[i].replace("\t", "^I")
+    
+    print("\n".join(lines))
+
 commands = {
     "cd": cmd_cd,
     "clear": cmd_clear,
     "exit": cmd_exit,
     "ls": cmd_ls,
+    "cat": cmd_cat,
 }

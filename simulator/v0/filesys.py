@@ -160,6 +160,10 @@ def isdir(path):
     return type(access(path)).__name__ == "Folder"
 
 
+def isfile(path):
+    return type(access(path)).__name__ == "File"
+
+
 def ispermitted(path, mode, user):
     obj = access(path)
 
