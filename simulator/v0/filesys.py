@@ -9,6 +9,10 @@ def sync(session, os):
     global OS
     OS = os
 
+    # sync session
+    global SESSION
+    SESSION = session
+
 
 def supercode(c):
     """
@@ -21,7 +25,7 @@ def supercode(c):
 
     if fields[0] == "FILE":
         return open(
-            "simulator/v0/data/files/" + fields[1], "r", encoding="utf-8"
+            SESSION["data"] + "files/" + fields[1], "r", encoding="utf-8"
         ).read()
 
 

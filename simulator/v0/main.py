@@ -1,18 +1,14 @@
 import shell
 import yaml
 
-SESSION = {
-    "prof": {"user": "guest", "name": "guest@PLee", "addr": "222.248.208.208"},
-    "dir": "/home/guest",
-    "game": {
-        "city": "Empire ZERO, Ciry of the Sun",
-    },
-}
 
-OS = yaml.safe_load(open("simulator/v0/data/os.yaml", "r", encoding="utf-8"))
+def init(session):
+    global OS, SESSION
+    SESSION = session
+    OS = yaml.safe_load(open(SESSION["data"] + "os.yaml", "r", encoding="utf-8"))
 
 
-def init(api):
+def init_shell(api):
     # sync
     shell.sync(SESSION, OS)
 
@@ -46,14 +42,10 @@ def start():
     input = terminal.api["input"]
 
     # init shell
-    init(terminal.api)
+    init_shell(terminal.api)
 
     # start shell
     shell.start()
 
     # start terminal
     terminal.api["mainloop"]()
-
-
-if __name__ == "__main__":
-    start()
