@@ -20,8 +20,9 @@ def init_shell(api):
     shell.input = api["input"]
 
 
-def start_prepare():
-    pass
+def set_checker(checker):
+    global check_pass
+    check_pass = checker
 
 
 def check_pass():
@@ -49,3 +50,6 @@ def start():
 
     # start terminal
     terminal.api["mainloop"]()
+
+    # check
+    return check_pass(SESSION, OS)

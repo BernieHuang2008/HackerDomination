@@ -22,7 +22,7 @@ def sync(session, os):
 
 def ask():
     print(
-        f"\033[1;32m{SESSION['prof']['name']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
+        f"\033[1;32m{SESSION['prof']['name']}@{SESSION['prof']['host']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
         end="",
     )
     allow_input()
@@ -142,35 +142,37 @@ def cmd_ls(paras: str):
     if not fs.ispermitted(target, "x", SESSION["prof"]["user"]):
         print("Permission denied.")
         return
-    
+
     target = fs.clean(target)
 
     fsdir = fs.access(SESSION["dir"])
     display = []
     for n, f in fsdir.content.items():
         # hidden files
-        if n.startswith('.') and 'a' not in flags:
+        if n.startswith(".") and "a" not in flags:
             continue
         # 'l' flag
-        if 'l' in flags:
-            display.append([f.permission, f.owner, f.size, f.colorname(SESSION['prof']['user'])])
+        if "l" in flags:
+            display.append(
+                [f.permission, f.owner, f.size, f.colorname(SESSION["prof"]["user"])]
+            )
         else:
-            display.append(f.colorname(SESSION['prof']['user']))
-    
+            display.append(f.colorname(SESSION["prof"]["user"]))
+
     # sort
-    r = 'r' in flags
-    if 'S' in flags:
+    r = "r" in flags
+    if "S" in flags:
         display.sort(key=lambda x: x[2], reverse=r)
 
     # print
-    if 'l' in flags:
+    if "l" in flags:
         print(f"total {len(display)}")
-        
+
         displayT = list(map(list, zip(*display)))
         maxlen = []
         for i in range(len(displayT)):
             maxlen.append(max(map(lambda x: len(str(x)), displayT[i])))
-        
+
         for row in display:
             for i in range(len(row)):
                 print(str(row[i]).ljust(maxlen[i]), end=" ")
@@ -210,35 +212,36 @@ def cmd_cat(paras: str):
     # print content
     lines = fs.access(target).content.split("\n")
 
-    if 's' in flags:
+    if "s" in flags:
         for i in range(1, len(lines)):
-            if lines[i] == "" and lines[i-1] == "":
+            if lines[i] == "" and lines[i - 1] == "":
                 lines[i] = None
         lines = list(filter(lambda x: x is not None, lines))
-    
-    if 'b' in flags:
+
+    if "b" in flags:
         nonblank = list(filter(lambda x: x != "", lines))
         max_num_len = len(str(len(nonblank)))
         for i in range(len(lines)):
             if lines[i] != "":
-                lines[i] = str(i+1).rjust(max_num_len) + "  " + lines[i]
+                lines[i] = str(i + 1).rjust(max_num_len) + "  " + lines[i]
             else:
                 lines[i] = " " * (max_num_len + 2) + lines[i]
 
-    elif 'n' in flags:
+    elif "n" in flags:
         max_num_len = len(str(len(lines)))
         for i in range(len(lines)):
-            lines[i] = str(i+1).rjust(max_num_len) + "  " + lines[i]
+            lines[i] = str(i + 1).rjust(max_num_len) + "  " + lines[i]
 
-    if 'E' in flags:
+    if "E" in flags:
         for i in range(len(lines)):
             lines[i] += "$"
-            
-    if 'T' in flags:
+
+    if "T" in flags:
         for i in range(len(lines)):
             lines[i] = lines[i].replace("\t", "^I")
-    
+
     print("\n".join(lines))
+
 
 commands = {
     "cd": cmd_cd,

@@ -1,7 +1,10 @@
 user:
   users:
     root:
-      password: 0 # this 0 is integer, not string, so user may not logged in.
+      # Password is an integer, not string. So players may
+      # not logged in through password even they are looking
+      # at this comment RIGHT NOW.
+      password: 0
       group: system
       home: /home/root
     system:
