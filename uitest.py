@@ -4,10 +4,12 @@ import ui.kingdom_map as testmd
 
 storage = {}
 
+
 def main_menu(canvas):
     """
     Display the main menu.
     """
+
     # Functions
     def f_resume(e):
         root = canvas.master
@@ -20,7 +22,7 @@ def main_menu(canvas):
         root = canvas.master
         root.destroy()
         root.quit()
-    
+
     # Menu
     menu = [("RESUME", f_resume), ("SHUTDOWN", f_shutdown)]
     all_items = []
@@ -34,7 +36,6 @@ def main_menu(canvas):
         YPAD = 5
         TOTALHEIGHT = len(menu) * HEIGHT + (len(menu) - 1) * YPAD
         YBIAS = (1000 - TOTALHEIGHT) / 2
-
 
         # Display
         for i in range(len(menu)):
@@ -85,16 +86,24 @@ def display_tk():
     SCALE_WIDTH = 1600 / SCREEN_WIDTH
     SCALE_HEIGHT = 1000 / SCREEN_HEIGHT
     MIN_SCALE = min(SCALE_WIDTH, SCALE_HEIGHT)
+    MAX_SCALE = max(SCALE_WIDTH, SCALE_HEIGHT)
+    WIDTH = 1600 / MAX_SCALE
+    HEIGHT = 1000 / MAX_SCALE
+
+    # Padding
+    XPAD = (SCREEN_WIDTH - WIDTH) // 2
+    YPAD = (SCREEN_HEIGHT - HEIGHT) // 2
 
     # Create canvas
-    canvas = tk.Canvas(root, width=1600, height=1000)
+    canvas = tk.Canvas(root, width=1600, height=1000, highlightthickness=0)
     canvas.scale("all", 0, 0, MIN_SCALE, MIN_SCALE)
-    canvas.pack()
+    canvas.place(x=XPAD, y=YPAD, width=WIDTH, height=HEIGHT)
 
     # Bind Events
     root.bind("<Escape>", lambda _: main_menu(canvas))
 
     # Display Map & Widgets
+    testmd.PAD = (XPAD, YPAD)
     testmd.display(canvas, root)
     storage["onclick"] = testmd.onclick
     canvas.bind("<Button-1>", testmd.onclick)

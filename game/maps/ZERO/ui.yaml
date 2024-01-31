@@ -1,7 +1,7 @@
 background: "bg.png"
-
 map:
   background: "mapbg.png"
+  preview-bg: "#45494a"
   textColor: "#fff"
   city:
     ordinary:

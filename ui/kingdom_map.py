@@ -7,7 +7,9 @@ from graph import graph_py
 import ui.game_preview as game_preview
 
 SETTINGS = {
-    "scale": 1000/600,
+    "scale": 1000 / 600,
+    "screen-width": 1600,
+    "screen-height": 1000,
     "textSize": 12,
     "widget": {
         "border": "#d4be73",
@@ -25,6 +27,7 @@ PROGRESS = {
 
 
 storage = {}
+
 
 def load_ui(fname):
     with open(fname, "r") as f:
@@ -118,6 +121,46 @@ def display_widgets(canvas, root):
         )
 
 
+def open_preview(target):
+    """
+    Open the preview page.
+    """
+    global storage
+
+    name, target = target, graph.nodes[target]
+
+    pos = target.pos
+    pos = [pos[0] * SETTINGS["scale"] + 150, pos[1] * SETTINGS["scale"]]
+    top = pos[1]
+    right = SETTINGS["screen-width"] - pos[0]
+
+    # P1 = left-top
+    preview_size = [300, 400]
+    if right >= preview_size[0]:
+        x1 = pos[0]
+    else:
+        x1 = pos[0] - preview_size[0]
+    if top >= preview_size[1]:
+        y1 = pos[1] - preview_size[1]
+    else:
+        y1 = pos[1]
+
+    pos = [x1 + PAD[0], y1 + PAD[1]]
+
+    # create canvas
+    can2 = tk.Canvas(
+        storage["root"],
+        width=preview_size[0],
+        height=preview_size[1],
+        bg=SETTINGS["ui"]["preview-bg"],
+        highlightthickness=0,
+    )
+    can2.place(x=pos[0], y=pos[1])
+    game_preview.display(can2, name)
+
+    storage["preview"] = (can2, pos, preview_size)
+
+
 def onclick(e):
     """
     Handle the click event.
@@ -125,6 +168,16 @@ def onclick(e):
     x, y = e.x, e.y
     sx = (x - 150) / SETTINGS["scale"]
     sy = y / SETTINGS["scale"]
+
+    # Check for preview
+    if "preview" in storage:
+        can2, pos, size = storage["preview"]
+        if pos[0] <= x <= pos[0] + size[0] and pos[1] <= y <= pos[1] + size[1]:
+            game_preview.onclick(x - pos[0], y - pos[1])
+            return
+        else:
+            can2.destroy()
+            del storage["preview"]
 
     # Check for widgets
     # widgets won't be scaled, so no need to scale back
@@ -137,10 +190,7 @@ def onclick(e):
     # Check for nodes
     target = graph_py.find_node(graph, sx, sy)  # remove offset
     if target is not None:
-        # TODO: display the game preview
-        ...
-        PROGRESS["captured"].append(target)
-        display()
+        open_preview(target)
 
 
 def display(canvas=None, root=None):
