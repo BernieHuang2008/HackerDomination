@@ -135,6 +135,9 @@ def handle_input(event):
     # Stop input
     forbid_input()
 
+    # Move cursor to the end
+    text.mark_set("insert", END)
+
     # Get current line
     line = text.get("insert linestart", "insert lineend")
     uinput = line[forbid_delete:]
