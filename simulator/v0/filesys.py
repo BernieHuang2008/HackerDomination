@@ -20,7 +20,9 @@ def supercode(c):
     fields = code.split(":")
 
     if fields[0] == "FILE":
-        return open("data/files/" + fields[1], "r", encoding="utf-8").read()
+        return open(
+            "simulator/v0/data/files/" + fields[1], "r", encoding="utf-8"
+        ).read()
 
 
 class File:
@@ -63,7 +65,7 @@ class Folder:
         self.ls = [
             {
                 "name": n,
-                "owner": self.owner,
+                "owner": c.owner,
                 "permission": c.permission,
                 "type": type(c).__name__,
             }
@@ -81,8 +83,6 @@ class Folder:
 
 
 def Auto(name, data, parent):
-    if type(data) != dict:
-        pass
     if data["type"] == "file":
         return File(name, data, parent)
     elif data["type"] == "dir":
@@ -92,11 +92,8 @@ def Auto(name, data, parent):
 def init():
     global root
     fs = OS["filesystem"]
-    root = Folder("root", {"content": fs}, None)
+    root = Folder("/", {"content": fs}, None)
     root.parent = root  # special case
-
-    for name, data in fs.items():
-        fs[name] = Auto(name, data, root)
 
 
 def access(path):
@@ -116,7 +113,7 @@ def access(path):
             continue
 
         if name not in curr.content:
-            raise Exception("path not exist")
+            return False  # Exception("path not exist")
 
         curr = curr.content[name]
 
@@ -142,7 +139,7 @@ def isdir(path):
     return type(access(path)).__name__ == "Folder"
 
 
-def ispermited(path, mode, user):
+def ispermitted(path, mode, user):
     obj = access(path)
 
     # not support group
