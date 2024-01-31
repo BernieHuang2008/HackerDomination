@@ -13,7 +13,7 @@ text.pack(fill="both", expand=True)
 text.configure(insertbackground="white", font=("Consolas", 12))
 
 
-def fake_print(s, end="\n"):
+def fake_print(s="", end="\n"):
     def get_lc(content, pos):
         """
         Get line (l) and column (c) of a position in the content
@@ -43,8 +43,8 @@ def fake_print(s, end="\n"):
         tname = f"style_{style['fg']}_{style['bg']}_{style['bold']}"
         text.tag_add(
             tname,
-            f"{cline + line1}.{col1}",
-            f"{cline + line2}.{col2}",
+            f"{cline + line1}.{col1+(ccol if line1==0 else 0)}",
+            f"{cline + line2}.{col2+(ccol if line2==0 else 0)}",
         )
 
         # Config Tags
@@ -135,7 +135,6 @@ def handle_input(event):
     # Stop input
     forbid_input()
 
-
     # Get current line
     line = text.get("insert linestart", "insert lineend")
     uinput = line[forbid_delete:]
@@ -182,7 +181,8 @@ def handle_up(event):
         text.delete(f"{cline}.{forbid_delete}", "insert lineend")
         text.insert("insert", api["history"][command_cursor])
         return "break"
-    
+
+
 def handle_down(event):
     global command_cursor
     if command_cursor == -1:
