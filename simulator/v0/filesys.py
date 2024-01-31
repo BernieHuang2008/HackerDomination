@@ -48,18 +48,18 @@ class FSBasicObject:
         for rule in LS_COLORS:
             if self.match(rule, user):
                 return f"\033[{LS_COLORS[rule]}m{self.name}\033[0m"
-            
+
     def match(self, rule, user):
         """
         check if self matches the LS_COLORS rule
         """
         if rule.startswith("*."):
             return self.name.endswith(rule[1:])
-        elif rule=='di':
+        elif rule == "di":
             return type(self).__name__ == "Folder"
-        elif rule=='ex':
+        elif rule == "ex":
             return ispermitted(getpath(self), "x", user)
-        elif rule=='ow':
+        elif rule == "ow":
             return ispermitted(getpath(self), "w", user)
         else:
             return False
@@ -143,6 +143,12 @@ def getpath(obj):
 
 
 def join(*args):
+    def cleaning(dirname):
+        if dirname.startswith(".") and not dirname.startswith(".."):
+            dirname = dirname[1:]
+        return dirname
+
+    args = list(map(cleaning, args))
     return "/".join(args).replace("//", "/")
 
 

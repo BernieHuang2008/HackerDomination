@@ -131,6 +131,19 @@ def cmd_ls(paras: str):
         paras = ["."]
 
     target = paras[0]
+    target = fs.join(SESSION["dir"], target)
+
+    if not fs.access(target):
+        print("No such file or directory.")
+        return
+    if not fs.isdir(target):
+        print("Not a directory.")
+        return
+    if not fs.ispermitted(target, "x", SESSION["prof"]["user"]):
+        print("Permission denied.")
+        return
+    
+    target = fs.clean(target)
 
     fsdir = fs.access(SESSION["dir"])
     display = []
