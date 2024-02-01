@@ -164,6 +164,10 @@ def onclick(e):
         start_area[0][0] <= x <= start_area[1][0]
         and start_area[0][1] <= y <= start_area[1][1]
     ):
+        # Disable main window
+        mainwin = e.widget.master
+        mainwin.attributes("-disabled", True)
+
         prog = progress.read_main_progress()
         all_term = prog["terminals"]["list"]
         shell_list = {}
@@ -180,6 +184,11 @@ def onclick(e):
 
         shell_starter.init(shell_list)
         shell_starter.render()
+
+        mainwin.attributes("-disabled", False)
+        # Move to top
+        mainwin.attributes('-topmost', 1)
+        mainwin.after_idle(mainwin.attributes, '-topmost', 0)
 
 
 def display(canvas, name):

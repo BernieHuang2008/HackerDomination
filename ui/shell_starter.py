@@ -49,6 +49,9 @@ def render():
     # Start button
     tk.Button(root, text=">_", command=lambda: start(combo, username, password)).pack()
 
+    root.bind("<Destroy>", lambda _: root.quit())
+    root.bind("<Escape>", lambda _: [root.destroy(), root.quit()])
+
     # Mainloop
     root.mainloop()
 
