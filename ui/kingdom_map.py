@@ -6,6 +6,8 @@ from graph import graph_py
 
 import ui.game_preview as game_preview
 
+PAD = (0, 0)    # will be set later
+
 SETTINGS = {
     "scale": 1000 / 600,
     "screen-width": 1600,
