@@ -1,0 +1,16 @@
+{
+    "captured": {
+        "count": 0,
+        "list": {
+            "<kingdom name>": {
+                "count": 0,
+                "full": false,
+                "list": []
+            }
+        }
+    },
+    "terminals": {
+        "count": 1,
+        "list": ["zer.09a.ple"]
+    }
+}

@@ -103,7 +103,3 @@ def checkpwd(ip, user, pwd):
 
     if user in users and users[user]["password"] == pwd:
         return True
-
-
-if __name__ == "__main__":
-    render()

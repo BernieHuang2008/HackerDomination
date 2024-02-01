@@ -3,6 +3,10 @@ import markdown
 import tkinter as tk
 import tkinterweb as th3
 import threading
+import json
+
+import ui.shell_starter as shell_starter
+import progress
 
 SETTINGS = {
     "textSize": 12,
@@ -160,7 +164,22 @@ def onclick(e):
         start_area[0][0] <= x <= start_area[1][0]
         and start_area[0][1] <= y <= start_area[1][1]
     ):
-        print("start button clicked")
+        prog = progress.read_main_progress()
+        all_term = prog["terminals"]["list"]
+        shell_list = {}
+
+        for shell_ip in all_term:
+            with open(f"game/machines/{shell_ip}/info.json") as f:
+                shell_info = json.load(f)
+
+            # Get Info
+            hostname = shell_info["Hostname"]
+
+            # Init shellcfg list
+            shell_list[hostname] = [shell_ip]
+
+        shell_starter.init(shell_list)
+        shell_starter.render()
 
 
 def display(canvas, name):
