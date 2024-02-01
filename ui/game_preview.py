@@ -2,6 +2,7 @@ import yaml
 import markdown
 import tkinter as tk
 import tkinterweb as th3
+import threading
 
 SETTINGS = {
     "textSize": 12,
@@ -89,7 +90,7 @@ def display_info(canvas):
     # Display IP info
     canvas.create_text(
         10,
-        300,
+        250,
         text="IP: " + str(settings["ip"]),
         fill="#cf4d68",
         font=("Consolas", 12),
@@ -99,10 +100,21 @@ def display_info(canvas):
     # Display the manual URI
     canvas.create_text(
         150,
-        360,
+        310,
         text="View Mission Manual",
         fill="#82c7ff",
         font=("Consolas", 12, "underline"),
+        anchor="center",
+    )
+
+    # Display the start button
+    canvas.create_rectangle(60, 350, 240, 390, fill="#096aae", width=0)
+    canvas.create_text(
+        150,
+        370,
+        text="START",
+        fill="white",
+        font=("Times", 20, "bold"),
         anchor="center",
     )
 
@@ -114,7 +126,7 @@ def onclick(e):
     x, y = e.x, e.y
 
     # Check for links
-    link_area = [(60, 340), (240, 380)]
+    link_area = [(60, 290), (240, 330)]
     if (
         link_area[0][0] <= x <= link_area[1][0]
         and link_area[0][1] <= y <= link_area[1][1]
@@ -124,17 +136,31 @@ def onclick(e):
         ) as f:
             md_text = f.read()
         html = markdown.markdown(md_text)
-        print(html)
 
         # Start render
-        window = tk.Tk()
-        window.geometry("500x800")
+        def f():
+            window = tk.Tk()
+            bx = window.winfo_screenwidth() - 500
+            by = window.winfo_screenheight() - 700
+            window.geometry("500x700+{}+{}".format(bx // 2, by // 2))
+            window.title("Mission Manual")
 
-        frame = th3.HtmlFrame(window, messages_enabled=False)
-        frame.load_html(html)
-        frame.pack(fill="both", expand=True)
+            frame = th3.HtmlFrame(window, messages_enabled=False)
+            frame.load_html(html)
+            frame.pack(fill="both", expand=True)
 
-        window.mainloop()
+            window.mainloop()
+
+        thread = threading.Thread(target=f)
+        thread.start()
+
+    # check for "start" button
+    start_area = [(60, 350), (240, 390)]
+    if (
+        start_area[0][0] <= x <= start_area[1][0]
+        and start_area[0][1] <= y <= start_area[1][1]
+    ):
+        print("start button clicked")
 
 
 def display(canvas, name):
