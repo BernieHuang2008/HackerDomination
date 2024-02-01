@@ -235,13 +235,39 @@ def clear():
     text.delete("1.0", END)
 
 
+def mousedown(e):
+    global cursor_pos
+    cursor_pos = text.index("insert")
+
+
+def onkeydown(e):
+    # If 'insert' is away, like selecting something, then move it back
+    insert = list(map(int, text.index("insert").split(".")))
+    cursor = list(map(int, cursor_pos.split(".")))
+    if insert[0] < cursor[0] or (insert[0] == cursor[0] and insert[1] < cursor[1]):
+        text.mark_set("insert", cursor_pos)
+
+    if not g_allow_input:
+        return "break"
+
+
+def onkeyup(e):
+    text.see("insert")
+
+    global cursor_pos
+    cursor_pos = text.index("insert")
+
+
+cursor_pos = "1.0"
 # Bind events
-text.bind("<Key>", lambda e: "break" if not g_allow_input else None)
+text.bind("<Key>", onkeydown)
+text.bind("<KeyRelease>", onkeyup)
 text.bind("<Return>", handle_input)
 text.bind("<BackSpace>", handle_backspace)
 text.bind("<Left>", handle_backspace)
 text.bind("<Up>", handle_up)
 text.bind("<Down>", handle_down)
+text.bind("<Button-1>", mousedown)
 
 
 api = {
