@@ -1,4 +1,7 @@
 import yaml
+import markdown
+import tkinter as tk
+import tkinterweb as th3
 
 SETTINGS = {
     "textSize": 12,
@@ -13,7 +16,7 @@ SETTINGS = {
 }
 
 
-storage = {}
+storage = {"kingdom_dir": "game/maps/ZERO/"}  # just temp
 
 
 def load_preview(fname):
@@ -87,8 +90,8 @@ def display_info(canvas):
     canvas.create_text(
         10,
         300,
-        text="  IP: " + str(settings["ip"]),
-        fill="black",
+        text="IP: " + str(settings["ip"]),
+        fill="#cf4d68",
         font=("Consolas", 12),
         anchor="nw",
     )
@@ -112,21 +115,40 @@ def onclick(e):
 
     # Check for links
     link_area = [(60, 340), (240, 380)]
-    if link_area[0][0] <= x <= link_area[1][0] and link_area[0][1] <= y <= link_area[1][1]:
-        # TODO: open the manual
-        ...
+    if (
+        link_area[0][0] <= x <= link_area[1][0]
+        and link_area[0][1] <= y <= link_area[1][1]
+    ):
+        with open(
+            f"{storage['kingdom_dir']}cities/{storage['name']}/assets/manual.md", "r"
+        ) as f:
+            md_text = f.read()
+        html = markdown.markdown(md_text)
+        print(html)
+
+        # Start render
+        window = tk.Tk()
+        window.geometry("500x800")
+
+        frame = th3.HtmlFrame(window, messages_enabled=False)
+        frame.load_html(html)
+        frame.pack(fill="both", expand=True)
+
+        window.mainloop()
 
 
 def display(canvas, name):
     """
     Display the preview box.
     """
+    # Store
+    storage["name"] = name
+
     # Load
-    load_preview(f"{kingdom_dir}cities/{name}/preview.yaml")
+    load_preview(f"{storage['kingdom_dir']}cities/{name}/preview.yaml")
 
     # Draw
     display_info(canvas)
 
-
-# Load Map Settings (Just Temporary)
-kingdom_dir = "game/maps/ZERO/"
+    # Bind
+    canvas.bind("<Button-1>", onclick)

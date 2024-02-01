@@ -158,7 +158,7 @@ def open_preview(target):
     can2.place(x=pos[0], y=pos[1])
     game_preview.display(can2, name)
 
-    storage["preview"] = (can2, pos, preview_size)
+    storage["preview"] = can2
 
 
 def onclick(e):
@@ -169,15 +169,10 @@ def onclick(e):
     sx = (x - 150) / SETTINGS["scale"]
     sy = y / SETTINGS["scale"]
 
-    # Check for preview
+    # Check for game preview
     if "preview" in storage:
-        can2, pos, size = storage["preview"]
-        if pos[0] <= x <= pos[0] + size[0] and pos[1] <= y <= pos[1] + size[1]:
-            game_preview.onclick(x - pos[0], y - pos[1])
-            return
-        else:
-            can2.destroy()
-            del storage["preview"]
+        storage["preview"].destroy()
+        del storage["preview"]
 
     # Check for widgets
     # widgets won't be scaled, so no need to scale back

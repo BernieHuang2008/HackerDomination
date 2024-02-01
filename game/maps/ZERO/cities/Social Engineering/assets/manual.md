@@ -7,7 +7,7 @@ Dr.Peter Lee is graduated from _the University of FoolBar_ with a excellent mark
 A few days ago, he built a server that was claimed to be **"unhackable"**. Actually, no one can! So we need your help!
 
 ## Mission
-1. Hack into Peter Lee's **"unhackable server"** (host name `PLee-Unhackable`)
+1. Hack into Peter Lee's **"unhackable server"** (host name: `PLee-Unhackable`)
 2. Reset the password of 'root' user
 3. Close the shell, another hacker will check the server later
 
