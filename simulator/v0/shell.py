@@ -4,7 +4,32 @@ cd, ls, cat, cp, mov, rm, cp, mkdir, echo, clear, exit
 """
 
 import shlex
-import filesys as fs
+from . import filesys as fs
+import yaml
+
+
+api = {}   # will be set later
+allow_input = None  # will be set later
+
+def os_load():
+    global OS
+    with open(f"game/machines/{SESSION['prof']['addr']}/vm/os.yaml") as os:
+        OS = yaml.safe_load(os)
+
+    # sync
+    fs.syncos(OS)
+
+
+def os_write():
+    global OS
+    while True:
+        # TODO: check for file difference
+        try:
+            with open(f"game/machines/{SESSION['prof']['addr']}/vm/os.yaml", "w") as os:
+                yaml.dump(OS, os)
+        except:
+            continue
+        break
 
 
 def sync(session, os):
@@ -22,7 +47,7 @@ def sync(session, os):
 
 def ask():
     print(
-        f"\033[1;32m{SESSION['prof']['name']}@{SESSION['prof']['host']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
+        f"\033[1;32m{SESSION['prof']['user']}@{SESSION['prof']['host']}\033[0m:\033[1;34m{SESSION['dir']}\033[0m$ ",
         end="",
     )
     allow_input()
@@ -49,7 +74,9 @@ def shell(cmd: str):
 
     # check command
     if command in commands:
+        os_load()
         commands[command](paras)
+        os_write()
 
     # Last, ask for next command
     ask()

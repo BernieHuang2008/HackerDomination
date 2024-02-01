@@ -1,4 +1,5 @@
-import shell
+from . import shell
+from . import terminal
 import yaml
 
 
@@ -16,6 +17,8 @@ def init_shell(api):
     shell.api = api
     shell.allow_input = api["input-allow"]
     shell.forbid_input = api["input-forbid"]
+    shell.xprint = print
+    shell.xinput = input
     shell.print = api["print"]
     shell.input = api["input"]
 
@@ -30,17 +33,14 @@ def check_pass():
 
 
 def start():
-    global print, input
-
-    import terminal
-
+    global cprint, cinput
     terminal.api["process"] = shell.shell
 
     # APIs
     allow_input = terminal.api["input-allow"]
     forbid_input = terminal.api["input-forbid"]
-    print = terminal.api["print"]
-    input = terminal.api["input"]
+    cprint = terminal.api["print"]
+    cinput = terminal.api["input"]
 
     # init shell
     init_shell(terminal.api)

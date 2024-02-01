@@ -1,4 +1,4 @@
-from tkinter import Tk, Text, Scrollbar, END
+from tkinter import Tk, Text, END
 import re
 
 # Create a new Tkinter window
@@ -7,7 +7,7 @@ window.geometry("960x540")  # Set the window size to hold 80x30 characters
 window.title("Terminal - Hacker Domination")
 
 # Create Text widget as terminal window
-text = Text(window, bg="black", fg="white")
+text = Text(window, bg="black", fg="white", highlightthickness=0)
 text.pack(fill="both", expand=True)
 
 text.configure(insertbackground="white", font=("Consolas", 12))

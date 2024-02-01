@@ -14,6 +14,14 @@ def sync(session, os):
     SESSION = session
 
 
+def syncos(os):
+    """
+    sync os
+    """
+    global OS
+    OS = os
+
+
 def supercode(c):
     """
     supercode
@@ -84,6 +92,16 @@ class File(FSBasicObject):
 
         return c
 
+    def export(self):
+        """
+        export the file
+        """
+        return {
+            "owner": self.owner,
+            "permission": self.permission,
+            "content": self.content,
+        }
+
 
 class Folder(FSBasicObject):
     def __init__(self, name, data, parent):
@@ -99,6 +117,16 @@ class Folder(FSBasicObject):
             c[name] = Auto(name, data, self)
 
         return c
+
+    def export(self):
+        """
+        export the folder
+        """
+        return {
+            "owner": self.owner,
+            "permission": self.permission,
+            "content": {name: obj.export() for name, obj in self.content.items()},
+        }
 
 
 def Auto(name, data, parent):
