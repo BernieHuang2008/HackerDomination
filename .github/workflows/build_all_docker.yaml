@@ -1,0 +1,32 @@
+name: 🐳 Build All Docker
+
+on: 
+  release:
+    types: [published]
+    paths:
+      - '**/Dockerfile'
+  workflow_dispatch:
+
+jobs:
+  build_games:
+    name: 🎮 Build Game Machines
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 👤 Log in
+        run: |
+          docker login -u berniehuang2008 -p ${{ secrets.DOCKER_API_KEY }}
+
+      - name: 🔨 Build all Docker images
+        run: |
+          for dir in game/machines/*/ ; do
+            docker build "$dir/vm" --file "$dir/vm/Dockerfile" --tag "berniehuang2008/hackerdomination:$(basename $dir)"
+          done
+
+      - name: ☁️ Push all Docker images
+        run: |
+          for dir in game/machines/*/ ; do
+            docker push "berniehuang2008/hackerdomination:$(basename $dir)"
+          done

@@ -1,108 +1,129 @@
+import sys
 import tkinter as tk
 from tkinter import ttk
-import yaml
+import json
 import subprocess
-import threading
+import simulator.machine as machine
 
 shells = {
     "PLee-Unhackable": ["zer.09a.ple"],
 }
 
-activated = set()
+unused_port = 10021
+activated_windows = set()
+activated_machines = {}
 
-def init(s):
+
+def init(s={}):
     """
     Initialize the shell starter.
     """
     global shells
     shells = s
+    global unused_port, activated_windows, activated_machines
+    unused_port = 10021
+    activated_windows = set()
+    activated_machines = {}
+
 
 def render():
     """
     Render the shell starter.
     """
-    root = tk.Tk()
-    root.title("Shell Starter")
-    root.geometry("200x200")
-    root.resizable(False, False)
+    try:
+        root = tk.Tk()
+        root.title("Shell Starter")
+        root.geometry("200x200")
+        root.resizable(False, False)
 
-    # Choose: which shell
-    tk.Label(root, text="Choose a shell:").pack()
-    combo = ttk.Combobox(root, values=list(shells.keys()))
-    combo.pack()
+        # Choose: which shell
+        tk.Label(root, text="Choose a shell:").pack()
+        combo = ttk.Combobox(root, values=list(shells.keys()))
+        combo.pack()
 
-    # Input: Username
-    tk.Label(root, text="Username:").pack()
-    username = tk.Entry(root)
-    username.pack()
+        # Input: Username
+        tk.Label(root, text="Username:").pack()
+        username = tk.Entry(root)
+        username.pack()
 
-    # Input: Password
-    tk.Label(root, text="Password:").pack()
-    password = tk.Entry(root)
-    password.pack()
+        # Error message
+        global err
+        err = tk.Label(root, text="", fg="red")
+        err.pack()
 
-    # Error message
-    global err
-    err = tk.Label(root, text="", fg="red")
-    err.pack()
+        # Start button
+        tk.Button(
+            root, text=">_", command=lambda: start(combo, username)
+        ).pack()
 
-    # Start button
-    tk.Button(root, text=">_", command=lambda: start(combo, username, password)).pack()
+        root.bind("<Destroy>", lambda _: root.quit())
+        root.bind("<Escape>", lambda _: [root.destroy(), root.quit()])
 
-    root.bind("<Destroy>", lambda _: root.quit())
-    root.bind("<Escape>", lambda _: [root.destroy(), root.quit()])
+        # Mainloop
+        root.mainloop()
+    finally:
+        close()
+        init()
 
-    # Mainloop
-    root.mainloop()
+
+def close():
+    """
+    Close the shell starter.
+    """
+    for ipv3, (port, container_ip) in activated_machines.items():
+        machine.stop_machine(container_ip)
 
 
-def start(combo, username, password):
+def start(combo, username):
     """
     Start the shell.
     """
     shell = combo.get()
     user = username.get()
-    pwd = password.get()
 
     shellcfg = shells[shell]
     shell_ip = shellcfg[0]
 
-    h = hash((shell, user, pwd))
+    # Machine
+    if shell_ip not in activated_machines:
+        global unused_port
+        unused_port += 1
+        machine_port = unused_port
 
-    if h in activated:
+        container_ip = machine.start_machine(shell_ip, machine_port)
+        activated_machines[shell_ip] = [machine_port, container_ip]
+    else:
+        machine_port, container_ip = activated_machines[shell_ip]
+
+    # Shell
+    h = hash((shell, user))
+
+    if h in activated_windows:
         err.config(text="Shell already activated.")
         return
-    
-    if not checkpwd(shell_ip, user, pwd):
-        err.config(text="Invalid username/password.")
+
+    if not checkpwd(shell_ip, user):
+        err.config(text="Invalid user.")
         return
-    
-    activated.add(h)
 
-    # Activate machine
-    start_subprocess(["python", f"game/machines/{shell_ip}/start.py", user, pwd], lambda: activated.remove(h))
+    activated_windows.add(h)
 
-def start_subprocess(cmd, callback):
-    """
-    Start a subprocess.
-    """
-    def run_subprocess():
-        subp = subprocess.Popen(cmd, stderr=open("log/vshell-error.log", "w"))
-        subp.wait()
-        callback()
+    # Activate shell
+    if sys.platform == "win32":
+        subprocess.Popen(
+            f'start cmd /k "ssh {user}@localhost -p {machine_port} && exit"',
+            shell=True,
+        )
 
-    thread = threading.Thread(target=run_subprocess)
-    thread.start()
-    
 
-def checkpwd(ip, user, pwd):
+def checkpwd(ip, user):
     """
     Check if the username/password is correct.
     """
-    with open(f"game/machines/{ip}/vm/os.yaml") as os:
-        os = yaml.safe_load(os)
-    
-    users = os["user"]["users"]
+    with open(f"game/machines/{ip}/info.json") as info:
+        info = json.load(info)
 
-    if user in users and users[user]["password"] == pwd:
+    users = info["users"]
+
+    if user in users:
         return True
