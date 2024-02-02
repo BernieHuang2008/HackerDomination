@@ -4,6 +4,7 @@ sys.path.append(os.getcwd())
 
 from scripts.session import session
 from scripts.checker import checker
+from scripts.scripts import scripts
 import simulator.v0.main as sim
 
 if __name__ == "__main__":
@@ -14,4 +15,5 @@ if __name__ == "__main__":
 
     sim.init(session)
     sim.set_checker(checker)
+    sim.set_scriptfile(scripts)
     sim.start()
