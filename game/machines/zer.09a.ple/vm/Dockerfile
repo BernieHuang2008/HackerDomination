@@ -7,7 +7,7 @@ RUN useradd -ms /bin/bash guest \
 
 # Root password
 ARG ROOT_PASSWORD
-RUN echo "root:${ROOT_PASSWORD}" | chpasswd
+RUN echo "root:THISISROOTPASSWORDANDITISSECRETDONOTTRYTOUSEITBECAUSEIWANTYOUTOBEHONEST" | chpasswd
 
 COPY ./files /
 

@@ -2,6 +2,7 @@ name: 🐳 Build All Docker
 
 on: 
   release:
+    types: [published]
     paths:
       - '**/Dockerfile'
   workflow_dispatch:
