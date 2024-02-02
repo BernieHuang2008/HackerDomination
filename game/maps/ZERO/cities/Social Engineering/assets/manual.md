@@ -11,6 +11,9 @@ A few days ago, he built a server that was claimed to be **"unhackable"**. Actua
 2. Reset the password of 'root' user
 3. Close the shell, another hacker will check the server later
 
+## Key Info
+- The server can be accessed via SSH
+- There's a `"guest"` account on the server, password is `"guest"`
 
 ## Knowledge about Social Engineering
 Social engineering is to use some public informations to get more information, even private information.
