@@ -7,8 +7,11 @@ RUN echo "root:plee666@unbreakable" | chpasswd \
     && echo 'guest:guest' | chpasswd\
     && echo 'PLee:plee666@unbreakable' | chpasswd
 
-# Install & Config SSH Server
-RUN apt-get update && apt-get install -y openssh-server \
+# Instal basic packages
+RUN apt-get update && apt-get install -y sudo
+
+# SSH Server
+RUN apt-get install -y openssh-server \
     && rm -rf /var/lib/apt/lists/* \
     && echo 'PermitRootLogin no' >> /etc/ssh/sshd_config \
     && echo 'AllowUsers guest PLee' >> /etc/ssh/sshd_config

@@ -56,6 +56,11 @@ def render():
             root, text=">_", command=lambda: start(combo, username)
         ).pack()
 
+        # Submit button
+        tk.Button(
+            root, text="Submit", command=lambda: check(combo)
+        ).pack()
+
         root.bind("<Destroy>", lambda _: root.quit())
         root.bind("<Escape>", lambda _: [root.destroy(), root.quit()])
 
@@ -114,6 +119,21 @@ def start(combo, username):
             f'start cmd /k "ssh {user}@localhost -p {machine_port} && exit"',
             shell=True,
         )
+
+
+def check(combo):
+    """
+    Run checker
+    """
+    shell = combo.get()
+    shellcfg = shells[shell]
+    shell_ip = shellcfg[0]
+    _, container_id = activated_machines[shell_ip]
+    
+    if machine.check(container_id):
+        err.config(text="Passed.")
+    else:
+        err.config(text="Failed.")
 
 
 def checkpwd(ip, user):
