@@ -1,0 +1,13 @@
+machine: "berniehuang2008/hackerdomination:m1"
+host:
+  Hostname: Unhackable
+  IPv3: "zer.09a.ple"
+
+users:
+  - name: "root"
+    password: "HONFOSFI-92HF08IEJ3U8WF=BG083TWF-9Y2HNICP999999WH2"
+  - name: "guest"
+    password: "guest"
+  - name: "PLee"
+    password: "plee666@unhackable"
+    groups: ["sudo"]
