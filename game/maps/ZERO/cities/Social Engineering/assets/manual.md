@@ -15,6 +15,10 @@ A few days ago, he built a server that was claimed to be **"unhackable"**. Actua
 - The server can be accessed via SSH
 - There's a `"guest"` account on the server, password is `"guest"`
 
+---
+---
+---
+
 ## Knowledge about Social Engineering
 Social engineering is to use some public informations to get more information, even private information.
 
@@ -36,3 +40,23 @@ Emm, it might be something like that, i can't remember the details.
 1. Since no one can hack into the server, maybe you should try "social engineering"?
 2. To change root's password, you need to activate a "root-shell" (unlike your normal shell) then run `passwd` command.
 
+## Step-By-Step Guide
+1. Start the game
+2. Enter 'yes' to trust the ssh shell
+3. Use the password 'guest' to login as 'guest'
+4. Use '`cat y_backup.txt`' to look through the backup file, and find the information you need
+5. Execute Y-Recovery by '`./y_recovery`'
+6. Use the information you found to reset the password of '@Peter_Lee'
+7. Remember the email address
+8. Execure QMAIL-Recovery by '`./qmail_recovery`'
+9. Use the email address and the information you found to reset the password and log into his email account
+10. Enter 'Starred' where stored the starred emails
+11. Find out the password for 'Unbreakable' server
+12. Exit SSH shell by '`exit`'
+13. Activate another shell as user 'PLee'
+14. Use the password you found to login as 'PLee'
+15. run '`sudo su`' to activate the root shell
+16. enter PLee's password again to confirm
+17. run '`passwd root`' to reset the password of 'root'
+18. enter the new password for 'root'
+19. Exit SSH shell and click the 'Submit' button to finish the mission
