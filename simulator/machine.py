@@ -7,10 +7,18 @@ import time
 
 
 client = docker.from_env()
+network = client.networks.create("HackerDominGame", driver="bridge")
 
 
 def run(image: str, ports: dict, host: dict):
-    container = client.containers.run(image, detach=True, ports=ports, hostname=host["Hostname"])
+    container = client.containers.run(
+        image,
+        detach=True,
+        ports=ports,
+        hostname=host["Hostname"],
+        network="HackerDominGame",
+        name=host["IPv3"],
+    )
     return container.id
 
 
