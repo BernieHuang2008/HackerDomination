@@ -3,10 +3,17 @@ import io
 import tarfile
 import yaml
 import docker
-import time
 
 
-client = docker.from_env()
+try:
+    client = docker.from_env()
+except Exception:
+    print("\033[91mError: Docker is not running.\033[0m")
+    print("\033[91m       Please start Docker manually.\033[0m")
+    exit(1)
+
+if "HackerDominGame" in [network.name for network in client.networks.list()]:
+    client.networks.get("HackerDominGame").remove()
 network = client.networks.create("HackerDominGame", driver="bridge")
 
 
@@ -24,7 +31,7 @@ def run(image: str, ports: dict, host: dict):
 
 def config_machine(container_id, config):
     def bash_run(command):
-        container.exec_run(["/bin/bash", "-c", command])
+        print(container.exec_run(["/bin/bash", "-c", command]))
 
     container = client.containers.get(container_id)
 
@@ -43,9 +50,14 @@ def config_machine(container_id, config):
     # Init file
     tar_stream = io.BytesIO()
     with tarfile.open(fileobj=tar_stream, mode="w") as tar:
-        tar.add("game/machines/{}/vm/files/".format(config["IPv3"]), arcname=".")
+        tar.add("game/machines/{}/vm/files/".format(config["host"]["IPv3"]), arcname=".")
     tar_stream.seek(0)
     container.put_archive("/", tar_stream)
+
+    # Init file permission
+    for perm in config["files"]["permission"]:
+        for fpath in config["files"]["permission"][perm]:
+            bash_run(f"chmod {perm} {fpath}")
 
 
 def start_machine(ipv3, port=10122):

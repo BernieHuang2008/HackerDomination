@@ -11,3 +11,8 @@ users:
   - name: "PLee"
     password: "plee666@unhackable"
     groups: ["sudo"]
+
+files:
+  permission:
+    777: 
+      - "/home/guest/*"
