@@ -16,12 +16,16 @@ int main()
     {
         cout << "Welcome, @Peter_Lee!" << endl;
         cout << "You've set 3 recovery questions before." << endl;
+        cout << endl;
         cout << "They are:" << endl;
         cout << "  1. What is your favorite color?" << endl;
         cout << "  2. What is your mother's full name?" << endl;
         cout << "  3. What is your sister's birthday?" << endl;
+        cout << endl;
         cout << "Please choose one: [ ]\b\b";
         cin >> input2;
+        cout << endl;
+        cout << endl;
         if (input2 == 1)
         {
             cout << "Please answer: What is your favorite color?" << endl;
@@ -41,14 +45,19 @@ int main()
             if (input == "1998-02-03")
             {
                 cout << "\033[32mCorrect Answer!\033[0m" << endl;
+                cout << endl;
+                cout << endl;
                 cout << "Please enter your new password:" << endl;
                 cin >> input;
-                cout << "Password updated successfully, please keep it safe!" << endl;
-                cout << "==================================================="  << endl;
+                cout << endl;
+                cout << "\033[32mPassword updated successfully, please keep it safe!\033[0m" << endl;
+                cout << endl;
+                cout << endl;
+                cout << "===================================================" << endl;
                 cout << "Username: Peter_Lee" << endl;
                 cout << "Password: ***" << endl;
                 cout << "Email: great_peter_lee@qmail.com" << endl;
-                cout << "==================================================="  << endl;
+                cout << "===================================================" << endl;
             }
             else
             {
