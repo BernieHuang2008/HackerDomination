@@ -183,20 +183,26 @@ def onclick(e):
             shell_list[hostname] = [shell_ip]
 
         shell_starter.init(shell_list)
-        shell_starter.render()
+        is_passed = shell_starter.render()
 
         mainwin.attributes("-disabled", False)
         # Move to top
-        mainwin.attributes('-topmost', 1)
-        mainwin.after_idle(mainwin.attributes, '-topmost', 0)
+        mainwin.attributes("-topmost", 1)
+        mainwin.after_idle(mainwin.attributes, "-topmost", 0)
+
+        # Close preview
+        storage["close-preview"](is_passed)
+        if is_passed:
+            shell_starter.close()
 
 
-def display(canvas, name):
+def display(canvas, name, close_preview):
     """
     Display the preview box.
     """
     # Store
     storage["name"] = name
+    storage["close-preview"] = close_preview
 
     # Load
     load_preview(f"{storage['kingdom_dir']}cities/{name}/preview.yaml")

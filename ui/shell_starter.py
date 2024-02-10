@@ -30,6 +30,7 @@ def render():
     """
     Render the shell starter.
     """
+    global root
     try:
         root = tk.Tk()
         root.title("Shell Starter")
@@ -53,19 +54,23 @@ def render():
 
         # Start button
         tk.Button(
-            root, text=">_", command=lambda: start(combo, username)
+            root, text="Activate [>_]", command=lambda: start(combo, username)
         ).pack()
 
         # Submit button
+        is_passed = [False]
         tk.Button(
-            root, text="Submit", command=lambda: check(combo)
+            root, text="Submit", command=lambda: check(combo, is_passed)
         ).pack()
 
+        root.bind("<Return>", lambda _: start(combo, username))
         root.bind("<Destroy>", lambda _: root.quit())
         root.bind("<Escape>", lambda _: [root.destroy(), root.quit()])
 
         # Mainloop
         root.mainloop()
+
+        return is_passed[0]
     finally:
         close()
         init()
@@ -75,8 +80,8 @@ def close():
     """
     Close the shell starter.
     """
-    for ipv3, (port, container_ip) in activated_machines.items():
-        machine.stop_machine(container_ip)
+    for ipv3, (port, container_id) in activated_machines.items():
+        machine.stop_machine(container_id)
 
 
 def start(combo, username):
@@ -95,19 +100,21 @@ def start(combo, username):
         unused_port += 1
         machine_port = unused_port
 
-        container_ip = machine.start_machine(shell_ip, machine_port)
-        activated_machines[shell_ip] = [machine_port, container_ip]
-    else:
-        machine_port, container_ip = activated_machines[shell_ip]
+        container_id = machine.start_machine(shell_ip, machine_port)
+        activated_machines[shell_ip] = [machine_port, container_id]
 
-    # Shell
+        machine.init_checker(container_id)
+    else:
+        machine_port, container_id = activated_machines[shell_ip]
+
+    # SSH Shell
     h = hash((shell, user))
 
     if h in activated_windows:
         err.config(text="Shell already activated.")
         return
 
-    if not checkpwd(shell_ip, user):
+    if not checkValidUsername(shell_ip, user):
         err.config(text="Invalid user.")
         return
 
@@ -121,7 +128,7 @@ def start(combo, username):
         )
 
 
-def check(combo):
+def check(combo, is_passed: list):
     """
     Run checker
     """
@@ -131,14 +138,20 @@ def check(combo):
     _, container_id = activated_machines[shell_ip]
     
     if machine.check(container_id):
+        err.config(fg="green")
         err.config(text="Passed.")
+        is_passed[0] = True
+        root.destroy()
+        root.quit()
     else:
         err.config(text="Failed.")
 
+    # no need to return, as `is_passed` is a list
 
-def checkpwd(ip, user):
+
+def checkValidUsername(ip, user):
     """
-    Check if the username/password is correct.
+    Check if the username is correct.
     """
     with open(f"game/machines/{ip}/info.json") as info:
         info = json.load(info)

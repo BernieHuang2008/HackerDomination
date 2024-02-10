@@ -50,7 +50,9 @@ def config_machine(container_id, config):
     # Init file
     tar_stream = io.BytesIO()
     with tarfile.open(fileobj=tar_stream, mode="w") as tar:
-        tar.add("game/machines/{}/vm/files/".format(config["host"]["IPv3"]), arcname=".")
+        tar.add(
+            "game/machines/{}/vm/files/".format(config["host"]["IPv3"]), arcname="."
+        )
     tar_stream.seek(0)
     container.put_archive("/", tar_stream)
 
@@ -82,6 +84,11 @@ def stop_machine(container_id):
 
 def check(container_id):
     container = client.containers.get(container_id)
-    exit_code, output = container.exec_run("/game/checker.sh")
+    exit_code, output = container.exec_run("bash /game/checker.sh")
 
     return exit_code == 0
+
+
+def init_checker(container_id):
+    container = client.containers.get(container_id)
+    container.exec_run("bash /game/checker_init.sh")

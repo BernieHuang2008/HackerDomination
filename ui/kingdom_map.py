@@ -6,7 +6,7 @@ from graph import graph_py
 
 import ui.game_preview as game_preview
 
-PAD = (0, 0)    # will be set later
+PAD = (0, 0)  # will be set later
 
 SETTINGS = {
     "scale": 1000 / 600,
@@ -158,9 +158,29 @@ def open_preview(target):
         highlightthickness=0,
     )
     can2.place(x=pos[0], y=pos[1])
-    game_preview.display(can2, name)
+    game_preview.display(can2, name, close_preview)
 
     storage["preview"] = can2
+    storage["preview-target"] = name
+
+
+def close_preview(is_passed=False):
+    """
+    Close the preview page.
+    """
+    if "preview" in storage:
+        # Update progress
+        if is_passed:
+            name = storage["preview-target"]
+            PROGRESS["captured"].append(name)
+
+        # Destroy
+        storage["preview"].destroy()
+        del storage["preview"]
+        del storage["preview-target"]
+
+        # Redraw
+        display(storage["canvas"], storage["root"])
 
 
 def onclick(e):
@@ -173,8 +193,7 @@ def onclick(e):
 
     # Check for game preview
     if "preview" in storage:
-        storage["preview"].destroy()
-        del storage["preview"]
+        close_preview()
 
     # Check for widgets
     # widgets won't be scaled, so no need to scale back
