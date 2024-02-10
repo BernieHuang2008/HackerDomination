@@ -21,7 +21,7 @@ SETTINGS = {
 }
 
 
-storage = {"kingdom_dir": "game/maps/ZERO/"}  # just temp
+storage = {"kingdom_dir": "game/maps/ZERO/"}  # TODO: just temp
 
 
 def load_preview(fname):

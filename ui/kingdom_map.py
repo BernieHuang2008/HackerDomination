@@ -231,7 +231,7 @@ def display(canvas=None, root=None):
     display_widgets(canvas, root)
 
 
-# Load Map Settings (Just Temporary)
+# Load Map Settings (TODO: Just Temporary)
 kingdom_dir = "game/maps/ZERO/"
 load_ui(kingdom_dir + "ui.yaml")
 graph = Graph.from_json(kingdom_dir + "graph.json")

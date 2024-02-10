@@ -6,7 +6,7 @@ import subprocess
 import simulator.machine as machine
 
 shells = {
-    "PLee-Unhackable": ["zer.09a.ple"],
+    "Hostname": ["IPv3"],
 }
 
 unused_port = 10021
