@@ -15,8 +15,8 @@ map:
       borderWidth: 2
       radius: 13
     captured:
-      color: "#89ffbf"
-      border: "#69a5d0"
+      color: "green"
+      border: "green"
       borderWidth: 1
       radius: 7
   road:
