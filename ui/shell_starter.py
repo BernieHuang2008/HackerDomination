@@ -54,7 +54,7 @@ def render():
 
         # Start button
         tk.Button(
-            root, text="Activate [>_]", command=lambda: start(combo, username)
+            root, text="Activate ( >_ )", command=lambda: start(combo, username)
         ).pack()
 
         # Submit button
@@ -96,6 +96,8 @@ def start(combo, username):
 
     # Machine
     if shell_ip not in activated_machines:
+        # Activate Machine
+        
         global unused_port
         unused_port += 1
         machine_port = unused_port

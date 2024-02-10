@@ -35,8 +35,22 @@ def config_machine(container_id, config):
 
     container = client.containers.get(container_id)
 
+    # init tools
+    tools = config.get("tools", [])
+    for tool in tools:
+        name = tool["name"]
+        via = tool["via"]
+        if via == "apt":
+            bash_run(f"apt install -y {name}")
+        if via == "apt-get":
+            bash_run(f"apt-get install -y {name}")
+        if via == "pip":
+            bash_run(f"pip install {name}")
+        if via == "pip3":
+            bash_run(f"pip3 install {name}")
+
     # init users
-    users = config["users"]
+    users = config.get("users", [])
     for user in users:
         if user["name"] != "root":
             bash_run(f"useradd -ms /bin/bash {user['name']}")
