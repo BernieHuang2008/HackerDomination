@@ -14,9 +14,10 @@ SETTINGS = {
 
 
 class Node:
-    def __init__(self, node):
+    def __init__(self, node, graph):
         self.pos = node["pos"]
         self.properties = node["properties"]
+        self.graph = graph
 
     def __setitem__(self, key, value):
         self.properties[key] = value
@@ -26,6 +27,18 @@ class Node:
 
     def json(self):
         return {"pos": self.pos, "properties": self.properties}
+
+    def neighbors(self):
+        g = self.graph
+        res = []
+
+        for e in g.edges:
+            if g.nodes[e.source] == self:
+                res.append(e.target)
+            if g.nodes[e.target] == self:
+                res.append(e.source)
+
+        return res
 
 
 class Edge:
@@ -44,16 +57,21 @@ class Graph:
 
     @classmethod
     def from_json(cls, file):
+        self = cls()
+
         with open(file, "r") as f:
             graph = json.load(f)
 
         nodes = graph["nodes"]
         edges = graph["edges"]
 
-        nodes = {n: Node(o) for n, o in nodes.items()}
+        nodes = {n: Node(o, graph=self) for n, o in nodes.items()}
         edges = [Edge(e) for e in edges]
 
-        return cls(nodes, edges)
+        self.nodes = nodes
+        self.edges = edges
+
+        return self
 
     def save(self, file):
         with open(file, "w") as f:
@@ -126,7 +144,7 @@ class Graph:
         canvas.update()
 
     def add_node(self, node: str, pos: list):
-        self.nodes[node] = Node({"pos": pos, "properties": {}})
+        self.nodes[node] = Node({"pos": pos, "properties": {}}, graph=self)
 
     def remove_node(self, node: str):
         # Remove all edges that contain the node

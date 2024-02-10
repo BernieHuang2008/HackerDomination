@@ -65,7 +65,7 @@ def autosplit(text, width):
     return lines
 
 
-def display_info(canvas):
+def display_info(canvas, status):
     """
     Display the information of the map.
     """
@@ -111,16 +111,39 @@ def display_info(canvas):
         anchor="center",
     )
 
-    # Display the start button
-    canvas.create_rectangle(60, 350, 240, 390, fill="#096aae", width=0)
-    canvas.create_text(
-        150,
-        370,
-        text="START",
-        fill="white",
-        font=("Times", 20, "bold"),
-        anchor="center",
-    )
+    if status == "contested":
+        # Display the start button
+        canvas.create_rectangle(60, 350, 240, 390, fill="#096aae", width=0)
+        canvas.create_text(
+            150,
+            370,
+            text="START",
+            fill="white",
+            font=("Times", 20, "bold"),
+            anchor="center",
+        )
+    if status == "captured":
+        # Display the restart button
+        canvas.create_rectangle(60, 350, 240, 390, fill="#a8ce6f", width=0)
+        canvas.create_text(
+            150,
+            370,
+            text="RESTART",
+            fill="white",
+            font=("Times", 20, "bold"),
+            anchor="center",
+        )
+    if status == "locked":
+        # Display the lock
+        canvas.create_rectangle(60, 350, 240, 390, fill="#3c3f41", width=0)
+        canvas.create_text(
+            150,
+            370,
+            text="LOCKED",
+            fill="white",
+            font=("Times", 20, "bold"),
+            anchor="center",
+        )
 
 
 def onclick(e):
@@ -161,7 +184,8 @@ def onclick(e):
     # check for "start" button
     start_area = [(60, 350), (240, 390)]
     if (
-        start_area[0][0] <= x <= start_area[1][0]
+        storage["city-status"] != "locked"
+        and start_area[0][0] <= x <= start_area[1][0]
         and start_area[0][1] <= y <= start_area[1][1]
     ):
         # Disable main window
@@ -196,19 +220,20 @@ def onclick(e):
             shell_starter.close()
 
 
-def display(canvas, name, close_preview):
+def display(canvas, name, status, close_preview):
     """
     Display the preview box.
     """
     # Store
     storage["name"] = name
     storage["close-preview"] = close_preview
+    storage["city-status"] = status
 
     # Load
     load_preview(f"{storage['kingdom_dir']}cities/{name}/preview.yaml")
 
     # Draw
-    display_info(canvas)
+    display_info(canvas, status)
 
     # Bind
     canvas.bind("<Button-1>", onclick)

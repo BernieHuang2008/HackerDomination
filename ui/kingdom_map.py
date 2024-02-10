@@ -8,6 +8,7 @@ import ui.game_preview as game_preview
 
 PAD = (0, 0)  # will be set later
 
+graph = None
 SETTINGS = {
     "scale": 1000 / 600,
     "screen-width": 1600,
@@ -31,10 +32,44 @@ PROGRESS = {
 storage = {}
 
 
-def load_ui(fname):
-    with open(fname, "r") as f:
-        ui = yaml.safe_load(f)
-        SETTINGS["ui"] = ui["map"]
+def init(kingdom_dir):
+    """
+    Initialize the map.
+    """
+    SETTINGS["kingdom-dir"] = kingdom_dir
+
+    """Helper Functions"""
+
+    def load_ui():
+        with open(kingdom_dir + "ui.yaml", "r") as f:
+            ui = yaml.safe_load(f)
+            SETTINGS["ui"] = ui["map"]
+
+    def load_about():
+        with open(kingdom_dir + "about.yaml", "r") as f:
+            about = yaml.safe_load(f)
+            SETTINGS["about"] = about
+
+    def load_graph():
+        global graph
+        graph = Graph.from_json(kingdom_dir + "graph.json")
+
+    def init_start_city():
+        """
+        Initialize the start city.
+        """
+        graph.add_node("__START__", [0, 1000])
+        graph.add_edge("__START__", SETTINGS["about"]["city"]["start"])
+
+        PROGRESS["captured"].append("__START__")
+
+    """Load"""
+    load_ui()
+    load_about()
+    load_graph()
+
+    """Init"""
+    init_start_city()
 
 
 def apply_style():
@@ -72,7 +107,7 @@ def display_bg(canvas):
 
     if "bg" not in storage:
         bg_name = SETTINGS["ui"]["background"]
-        bg_path = kingdom_dir + "assets/" + bg_name
+        bg_path = SETTINGS["kingdom-dir"] + "assets/" + bg_name
         bg = tk.PhotoImage(file=bg_path)
         canvas.create_image(0, 0, image=bg, anchor="nw")
         storage["bg"] = bg
@@ -123,6 +158,21 @@ def display_widgets(canvas, root):
         )
 
 
+def get_city_status(name):
+    """
+    Get the status of a city.
+    """
+    target = graph.nodes[name]
+
+    if name in PROGRESS["captured"]:
+        return "captured"
+
+    if any(x in PROGRESS["captured"] for x in target.neighbors()):
+        return "contested"
+
+    return "locked"
+
+
 def open_preview(target):
     """
     Open the preview page.
@@ -135,6 +185,8 @@ def open_preview(target):
     pos = [pos[0] * SETTINGS["scale"] + 150, pos[1] * SETTINGS["scale"]]
     top = pos[1]
     right = SETTINGS["screen-width"] - pos[0]
+
+    status = get_city_status(name)
 
     # P1 = left-top
     preview_size = [300, 400]
@@ -158,7 +210,7 @@ def open_preview(target):
         highlightthickness=0,
     )
     can2.place(x=pos[0], y=pos[1])
-    game_preview.display(can2, name, close_preview)
+    game_preview.display(can2, name, status, close_preview)
 
     storage["preview"] = can2
     storage["preview-target"] = name
@@ -170,8 +222,8 @@ def close_preview(is_passed=False):
     """
     if "preview" in storage:
         # Update progress
-        if is_passed:
-            name = storage["preview-target"]
+        name = storage["preview-target"]
+        if is_passed and name not in PROGRESS["captured"]:
             PROGRESS["captured"].append(name)
 
         # Destroy
@@ -232,6 +284,4 @@ def display(canvas=None, root=None):
 
 
 # Load Map Settings (TODO: Just Temporary)
-kingdom_dir = "game/maps/ZERO/"
-load_ui(kingdom_dir + "ui.yaml")
-graph = Graph.from_json(kingdom_dir + "graph.json")
+init("game/maps/ZERO/")

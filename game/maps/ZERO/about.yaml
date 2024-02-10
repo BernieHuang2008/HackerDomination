@@ -6,10 +6,13 @@ tips:
   - "You must conquer others to expand your empire."
   - "Capitals are the hardest. But once dominated, the empire is destroyed."
 
-cities: [
-    "DDoS", # Capital
-    "Social Engineering",
-    "Password Cracking",
-    "Network Scanning",
-    "Malware Attacks",
-  ]
+city: 
+  capital: "DDoS"
+  start: "Social Engineering"
+  end: "DDoS"
+  list:
+    - "DDoS"
+    - "Social Engineering"
+    - "Password Cracking"
+    - "Network Scanning"
+    - "Malware Attacks"
