@@ -31,7 +31,7 @@ def run(image: str, ports: dict, host: dict):
 
 def config_machine(container_id, config):
     def bash_run(command):
-        print(container.exec_run(["/bin/bash", "-c", command]))
+        container.exec_run(["/bin/bash", "-c", command])
 
     container = client.containers.get(container_id)
 
