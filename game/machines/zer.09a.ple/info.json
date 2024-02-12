@@ -1,5 +1,6 @@
 {
     "IPv3": "zer.09a.ple",
     "Hostname": "PLee-Unhackable",
-    "users": ["PLee", "guest"]
+    "SshUsers": ["PLee", "guest"],
+    "AllUsers": ["PLee", "guest", "root"]
 }

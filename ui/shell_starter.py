@@ -125,7 +125,7 @@ def start(combo, username):
     # Activate shell
     if sys.platform == "win32":
         subprocess.Popen(
-            f'start cmd /k "ssh {user}@localhost -p {machine_port} && exit"',
+            f'start cmd /k "ssh {user}@localhost -p {machine_port} & exit"',
             shell=True,
         )
 
@@ -158,7 +158,7 @@ def checkValidUsername(ip, user):
     with open(f"game/machines/{ip}/info.json") as info:
         info = json.load(info)
 
-    users = info["users"]
+    users = info["SshUsers"]
 
     if user in users:
         return True

@@ -40,6 +40,7 @@ def config_machine(container_id, config):
     for tool in tools:
         name = tool["name"]
         via = tool["via"]
+        print(43, name, via)
         if via == "apt":
             bash_run(f"apt install -y {name}")
         if via == "apt-get":

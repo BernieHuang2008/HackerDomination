@@ -114,5 +114,5 @@ def display_tk():
 
 
 if __name__ == "__main__":
-    MAIN_PROGRESS = progress.read_main_progress()
+    MAIN_PROGRESS = progress.read_main_progress()   # TODO: update more frequently
     display_tk()

@@ -194,8 +194,17 @@ def onclick(e):
 
         prog = progress.read_main_progress()
         all_term = prog["terminals"]["list"]
+
         shell_list = {}
 
+        # Get this city's shell
+        this_ips = map(lambda x: x.strip(), SETTINGS["preview_page"]["ip"].split(","))
+        for this_ip in this_ips:
+            with open(f"game/machines/{this_ip}/info.json") as f:
+                cfg = json.load(f)
+                shell_list[cfg["Hostname"]] = [this_ip]
+
+        # Get shells of captured cities
         for shell_ip in all_term:
             with open(f"game/machines/{shell_ip}/info.json") as f:
                 shell_info = json.load(f)
@@ -218,6 +227,13 @@ def onclick(e):
         storage["close-preview"](is_passed)
         if is_passed:
             shell_starter.close()
+
+            # Main Progress
+            main_progress = progress.read_main_progress()
+            main_progress["terminals"]["list"].extend(this_ips)
+            main_progress["terminals"]["list"] = list(set(main_progress["terminals"]["list"]))
+            main_progress["terminals"]["count"] = len(main_progress["terminals"]["list"])
+            progress.write_main_progress(main_progress)
 
 
 def display(canvas, name, status, close_preview):

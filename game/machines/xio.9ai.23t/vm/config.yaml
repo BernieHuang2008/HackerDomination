@@ -1,0 +1,24 @@
+machine: "berniehuang2008/hackerdomination:m1"
+host:
+  Hostname: TopVault
+  IPv3: "xio.9ai.23t"
+
+users:
+  - name: "root"
+    password: " urDQEA]-UDI0M JFAWIHSDF 'NOPFSIDAOU;FASDJOF;JASDI;F"
+  - name: "vault"
+    password: "plee666@topvault"
+  - name: "webserver"
+    password: "fjdisaopmutw e89r =2483uf0jfr97uagw=-9vdsijzef'i9ug]rusd"
+    groups: ["sudo"]
+
+tools:
+  - name: zip
+    via: apt
+  - name: unzip
+    via: apt
+
+files:
+  permission:
+    777: 
+      - "/home/vault/*"

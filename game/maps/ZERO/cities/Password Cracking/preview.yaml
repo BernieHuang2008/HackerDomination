@@ -1,0 +1,4 @@
+name: Password Cracking
+description: Some sensitive files has been packed into a password protected ZIP file. You need to crack the password to get those files.
+ip: xio.9ai.23t
+manual: manual.md

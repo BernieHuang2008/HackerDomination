@@ -9,7 +9,7 @@ A few days ago, he built a server that was claimed to be **"unhackable"**. Actua
 ## Mission
 1. Hack into Peter Lee's **"unhackable server"** (host name: `PLee-Unhackable`)
 2. Reset the password of 'root' user
-3. Close the shell, another hacker will check the server later
+3. Close the shell, submit the mission.
 
 ## Key Info
 - The server can be accessed via SSH
