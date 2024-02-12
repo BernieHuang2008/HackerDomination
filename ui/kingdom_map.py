@@ -4,6 +4,7 @@ import tkinter as tk
 from graph import Graph
 from graph import graph_py
 
+import progress
 import ui.game_preview as game_preview
 
 PAD = (0, 0)  # will be set later
@@ -24,9 +25,7 @@ SETTINGS = {
     },
 }
 
-PROGRESS = {
-    "captured": [],
-}
+PROGRESS = progress.read_kingdom_progress("ZERO")
 
 
 storage = {}
@@ -61,7 +60,7 @@ def init(kingdom_dir):
         graph.add_node("__START__", [0, 1000])
         graph.add_edge("__START__", SETTINGS["about"]["city"]["start"])
 
-        PROGRESS["captured"].append("__START__")
+        PROGRESS["captured"]["list"].append("__START__")
 
     """Load"""
     load_ui()
@@ -87,7 +86,7 @@ def apply_style():
         }
 
     for name, node in graph.nodes.items():
-        if name in PROGRESS["captured"]:
+        if name in PROGRESS["captured"]["list"]:
             apply_node(node, SETTINGS["ui"]["city"]["captured"])
         elif "capital" in node.properties and node["capital"] is True:
             apply_node(node, SETTINGS["ui"]["city"]["capital"])
@@ -164,10 +163,10 @@ def get_city_status(name):
     """
     target = graph.nodes[name]
 
-    if name in PROGRESS["captured"]:
+    if name in PROGRESS["captured"]["list"]:
         return "captured"
 
-    if any(x in PROGRESS["captured"] for x in target.neighbors()):
+    if any(x in PROGRESS["captured"]["list"] for x in target.neighbors()):
         return "contested"
 
     return "locked"
@@ -223,8 +222,9 @@ def close_preview(is_passed=False):
     if "preview" in storage:
         # Update progress
         name = storage["preview-target"]
-        if is_passed and name not in PROGRESS["captured"]:
-            PROGRESS["captured"].append(name)
+        if is_passed and name not in PROGRESS["captured"]["list"]:
+            PROGRESS["captured"]["list"].append(name)
+            progress.write_kingdom_progress("ZERO", PROGRESS)
 
         # Destroy
         storage["preview"].destroy()

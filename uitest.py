@@ -1,8 +1,10 @@
 import tkinter as tk
 import ui.kingdom_map as testmd
+import progress
 
 
 storage = {}
+MAIN_PROGRESS = None
 
 
 def main_menu(canvas):
@@ -112,4 +114,5 @@ def display_tk():
 
 
 if __name__ == "__main__":
+    MAIN_PROGRESS = progress.read_main_progress()
     display_tk()
