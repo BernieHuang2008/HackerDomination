@@ -5,11 +5,11 @@ host:
 
 users:
   - name: "root"
-    password: " urDQEA]-UDI0M JFAWIHSDF 'NOPFSIDAOU;FASDJOF;JASDI;F"
+    password: "urDQEA]-UDI0M+JFAWIHSDF;NOPFSIDAOU;FASDJOF;JASDI;F"
   - name: "vault"
     password: "plee666@topvault"
   - name: "webserver"
-    password: "fjdisaopmutw e89r =2483uf0jfr97uagw=-9vdsijzef'i9ug]rusd"
+    password: "fjdisaopmutw-e89r--2483uf0jfr97uagw.-9vdsijzef.i9ug.rusd"
     groups: ["sudo"]
 
 tools:
