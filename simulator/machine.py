@@ -3,6 +3,7 @@ import io
 import tarfile
 import yaml
 import docker
+import threading
 
 
 try:
@@ -29,14 +30,19 @@ def run(image: str, ports: dict, host: dict):
     return container.id
 
 
-def config_machine(container_id, config):
+def config_machine(container_id, config, update_label):
     def bash_run(command):
         res = container.exec_run(["/bin/bash", "-c", command])
-        print(command, res)
+        # print(command, res)
 
     container = client.containers.get(container_id)
 
+    # update
+    update_label("Updating \"apt\" ...")
+    bash_run("apt update")
+
     # init tools
+    update_label("Installing tools ...")
     tools = config.get("tools", [])
     for tool in tools:
         name = tool["name"]
@@ -51,6 +57,7 @@ def config_machine(container_id, config):
             bash_run(f"pip3 install {name}")
 
     # init users
+    update_label("Initing user ...")
     users = config.get("users", [])
     for user in users:
         if user["name"] != "root":
@@ -63,6 +70,7 @@ def config_machine(container_id, config):
             bash_run(f"echo '{user['name']}:{user['password']}' | chpasswd")
 
     # Init file
+    update_label("Initing filesystem ...")
     tar_stream = io.BytesIO()
     with tarfile.open(fileobj=tar_stream, mode="w") as tar:
         tar.add(
@@ -76,6 +84,8 @@ def config_machine(container_id, config):
         for fpath in config["files"]["permission"][perm]:
             bash_run(f"chmod {perm} {fpath}")
 
+    update_label("COMMAND:CLOSE")
+
 
 def start_machine(ipv3, port=10122):
     os.system(f"ssh-keygen -R [localhost]:{str(port)}")
@@ -85,10 +95,38 @@ def start_machine(ipv3, port=10122):
 
     container_id = run(config["machine"], {22: port}, config["host"])
 
-    config_machine(container_id, config)
+    update_label = info_tk()
+    config_machine(container_id, config, update_label)
 
     return container_id
 
+def info_tk():
+    import tkinter as tk
+
+    root = tk.Tk()
+    root.title("Machine Initializing ...")
+    root.geometry("300x50")
+
+    tk.Label(root, text="Progress").pack()
+
+    label = tk.Label(root, text="Machine Initializing ...")
+    label.pack()
+
+    root.update()
+    cnt = 0
+
+    def update_label(text):
+        nonlocal cnt
+        cnt += 1
+
+        if text == "COMMAND:CLOSE":
+            root.destroy()
+            return
+
+        label.config(text=f"[{cnt}/4] {text}")
+        root.update()
+
+    return update_label
 
 def stop_machine(container_id):
     client = docker.from_env()

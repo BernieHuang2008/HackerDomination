@@ -1,6 +1,6 @@
 {
     "IPv3": "xio.9ai.23t",
     "Hostname": "TopVault",
-    "SshUsers": ["vault"],
+    "SshUsers": ["vault", "webserver"],
     "AllUsers": ["vault", "webserver", "root"]
 }
