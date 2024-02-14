@@ -198,7 +198,10 @@ def onclick(e):
         shell_list = {}
 
         # Get this city's shell
-        this_ips = map(lambda x: x.strip(), SETTINGS["preview_page"]["ip"].split(","))
+        this_ips = map(
+            lambda x: x.replace("?", "").strip(),
+            SETTINGS["preview_page"]["ip"].split(","),
+        )
         for this_ip in this_ips:
             with open(f"game/machines/{this_ip}/info.json") as f:
                 cfg = json.load(f)
@@ -231,8 +234,12 @@ def onclick(e):
             # Main Progress
             main_progress = progress.read_main_progress()
             main_progress["terminals"]["list"].extend(this_ips)
-            main_progress["terminals"]["list"] = list(set(main_progress["terminals"]["list"]))
-            main_progress["terminals"]["count"] = len(main_progress["terminals"]["list"])
+            main_progress["terminals"]["list"] = list(
+                set(main_progress["terminals"]["list"])
+            )
+            main_progress["terminals"]["count"] = len(
+                main_progress["terminals"]["list"]
+            )
             progress.write_main_progress(main_progress)
 
 

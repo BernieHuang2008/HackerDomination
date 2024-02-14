@@ -31,7 +31,8 @@ def run(image: str, ports: dict, host: dict):
 
 def config_machine(container_id, config):
     def bash_run(command):
-        container.exec_run(["/bin/bash", "-c", command])
+        res = container.exec_run(["/bin/bash", "-c", command])
+        print(command, res)
 
     container = client.containers.get(container_id)
 
@@ -40,7 +41,6 @@ def config_machine(container_id, config):
     for tool in tools:
         name = tool["name"]
         via = tool["via"]
-        print(43, name, via)
         if via == "apt":
             bash_run(f"apt install -y {name}")
         if via == "apt-get":
