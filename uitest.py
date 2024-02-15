@@ -5,12 +5,14 @@ import progress
 
 storage = {}
 MAIN_PROGRESS = None
+MAX_SCALE = 1
 
 
 def main_menu(canvas):
     """
     Display the main menu.
     """
+    global MAX_SCALE
 
     # Functions
     def f_resume(e):
@@ -30,14 +32,28 @@ def main_menu(canvas):
     all_items = []
 
     def display_on_center():
-        # Calculate
+        # Parameters
+        SCREEN_WIDTH = 1600
+        SCREEN_HEIGHT = 1000
         WIDTH = 200
-        x1, x2 = (1600 - WIDTH) / 2, (1600 + WIDTH) / 2
         HEIGHT = 50
         TEXTSIZE = 20
         YPAD = 5
+
+        # Scale
+        # fmt: off
+        SCREEN_WIDTH    *= MAX_SCALE
+        SCREEN_HEIGHT   *= MAX_SCALE
+        WIDTH           *= MAX_SCALE
+        HEIGHT          *= MAX_SCALE
+        TEXTSIZE        = int(TEXTSIZE * MAX_SCALE)
+        YPAD            *= MAX_SCALE
+        # fmt: on
+
+        # Calculate
+        x1, x2 = (SCREEN_WIDTH - WIDTH) / 2, (SCREEN_WIDTH + WIDTH) / 2
         TOTALHEIGHT = len(menu) * HEIGHT + (len(menu) - 1) * YPAD
-        YBIAS = (1000 - TOTALHEIGHT) / 2
+        YBIAS = (SCREEN_HEIGHT - TOTALHEIGHT) / 2
 
         # Display
         for i in range(len(menu)):
@@ -70,6 +86,8 @@ def main_menu(canvas):
 
 
 def display_tk():
+    global MAX_SCALE
+
     root = tk.Tk()
 
     # Set up window
@@ -84,12 +102,12 @@ def display_tk():
     SCREEN_HEIGHT = root.winfo_screenheight()
 
     # Scale
-    SCALE_WIDTH = 1600 / SCREEN_WIDTH
-    SCALE_HEIGHT = 1000 / SCREEN_HEIGHT
-    MIN_SCALE = min(SCALE_WIDTH, SCALE_HEIGHT)
+    SCALE_WIDTH = SCREEN_WIDTH / 1600
+    SCALE_HEIGHT = SCREEN_HEIGHT / 1000
     MAX_SCALE = max(SCALE_WIDTH, SCALE_HEIGHT)
-    WIDTH = 1600 / MAX_SCALE
-    HEIGHT = 1000 / MAX_SCALE
+    MIN_SCALE = min(SCALE_WIDTH, SCALE_HEIGHT)
+    WIDTH = 1600 * MIN_SCALE
+    HEIGHT = 1000 * MIN_SCALE
 
     # Padding
     XPAD = (SCREEN_WIDTH - WIDTH) // 2
@@ -104,7 +122,7 @@ def display_tk():
 
     # Display Map & Widgets
     testmd.PAD = (XPAD, YPAD)
-    testmd.SCALE *= 1 / MIN_SCALE
+    testmd.SCALE *= MAX_SCALE
     testmd.display(canvas, root)
     storage["onclick"] = testmd.onclick
     canvas.bind("<Button-1>", testmd.onclick)
