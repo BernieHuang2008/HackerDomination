@@ -7,11 +7,12 @@ from graph import graph_py
 import progress
 import ui.game_preview as game_preview
 
-PAD = (0, 0)  # will be set later
+# These variables will be set by 'main' later
+PAD = (0, 0)
+SCALE = 1000 / 600  # base scale
 
 graph = None
 SETTINGS = {
-    "scale": 1000 / 600,
     "screen-width": 1600,
     "screen-height": 1000,
     "textSize": 12,
@@ -181,7 +182,7 @@ def open_preview(target):
     name, target = target, graph.nodes[target]
 
     pos = target.pos
-    pos = [pos[0] * SETTINGS["scale"] + 150, pos[1] * SETTINGS["scale"]]
+    pos = [pos[0] * SCALE + 150, pos[1] * SCALE]
     top = pos[1]
     right = SETTINGS["screen-width"] - pos[0]
 
@@ -240,8 +241,8 @@ def onclick(e):
     Handle the click event.
     """
     x, y = e.x, e.y
-    sx = (x - 150) / SETTINGS["scale"]
-    sy = y / SETTINGS["scale"]
+    sx = (x - 150) / SCALE
+    sy = y / SCALE
 
     # Check for game preview
     if "preview" in storage:
@@ -279,7 +280,7 @@ def display(canvas=None, root=None):
     # Draw
     apply_style()
     display_bg(canvas)
-    graph.draw(canvas, clearprev=False, offset=(150, 0), scale=SETTINGS["scale"])
+    graph.draw(canvas, clearprev=False, offset=(150, 0), scale=SCALE)
     display_widgets(canvas, root)
 
 

@@ -74,7 +74,6 @@ def display_tk():
 
     # Set up window
     root.title("Map")
-    root.geometry("800x600")
     root.resizable(False, False)
     root.attributes("-topmost", False)
     root.attributes("-fullscreen", True)
@@ -98,7 +97,6 @@ def display_tk():
 
     # Create canvas
     canvas = tk.Canvas(root, width=1600, height=1000, highlightthickness=0)
-    canvas.scale("all", 0, 0, MIN_SCALE, MIN_SCALE)
     canvas.place(x=XPAD, y=YPAD, width=WIDTH, height=HEIGHT)
 
     # Bind Events
@@ -106,6 +104,7 @@ def display_tk():
 
     # Display Map & Widgets
     testmd.PAD = (XPAD, YPAD)
+    testmd.SCALE *= 1 / MIN_SCALE
     testmd.display(canvas, root)
     storage["onclick"] = testmd.onclick
     canvas.bind("<Button-1>", testmd.onclick)
@@ -114,5 +113,6 @@ def display_tk():
 
 
 if __name__ == "__main__":
-    MAIN_PROGRESS = progress.read_main_progress()   # TODO: update more frequently
+    # TODO: update MAIN_PROGRESS more frequently
+    MAIN_PROGRESS = progress.read_main_progress()
     display_tk()
