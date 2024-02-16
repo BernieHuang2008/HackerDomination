@@ -1,3 +1,0 @@
-- pwd.zip: 125983
-- secret.zip: 265231
-- secret.sec has been modified with HEX Editor, can't be faked.

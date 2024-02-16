@@ -10,10 +10,10 @@ Some sensitive files has been packed into a password protected ZIP file. You nee
 4. Close the shell, submit the mission.
 
 ## Key Info
-- There's a user '`vault`', where stored all the secret files.
-- This server also belongs to Peter Lee.
-- Password of user '`webserver`' is also a secret --- kept in vault.
-- All passwords are 6-digit numbers
+- There's a user '`vault`' on computer, '`/home/vault`' stored all secret files.
+- This server (Hostnaem: `TopVault`) also belongs to Peter Lee.
+- Password of user '`webserver`' is a secret kept in '`pwd.zip`', vault.
+- All passwords for ZIPs are 4-digit numbers
 
 ---
 ---
