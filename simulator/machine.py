@@ -37,9 +37,15 @@ def config_machine(container_id, config, update_label):
 
     container = client.containers.get(container_id)
 
-    # update
-    update_label("Updating \"apt\" ...")
-    bash_run("apt update")
+    # update installer
+    update_label("Updating installer ...")
+    will_use = set()
+    for t in tools:
+        will_use.add(t["via"])
+    if "apt" in will_use:
+        bash_run("apt update")
+    if "apt-get" in will_use:
+        bash_run("apt-get update")
 
     # init tools
     update_label("Installing tools ...")
