@@ -22,3 +22,5 @@ files:
   permission:
     777: 
       - "/home/vault/*"
+    700:
+      - "/home/webserver/*"

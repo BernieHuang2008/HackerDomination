@@ -39,6 +39,7 @@ def config_machine(container_id, config, update_label):
 
     # update installer
     update_label("Updating installer ...")
+    tools = config.get("tools", [])
     will_use = set()
     for t in tools:
         will_use.add(t["via"])
@@ -49,7 +50,6 @@ def config_machine(container_id, config, update_label):
 
     # init tools
     update_label("Installing tools ...")
-    tools = config.get("tools", [])
     for tool in tools:
         name = tool["name"]
         via = tool["via"]
