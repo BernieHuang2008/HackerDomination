@@ -3,7 +3,6 @@ import io
 import tarfile
 import yaml
 import docker
-import threading
 
 
 try:
@@ -30,7 +29,7 @@ def run(image: str, ports: dict, host: dict):
     return container.id
 
 
-def config_machine(container_id, config, update_label):
+def config_machine(container_id, config, update_label, update_sublabel):
     def bash_run(command):
         res = container.exec_run(["/bin/bash", "-c", command])
         # print(command, res)
@@ -43,9 +42,13 @@ def config_machine(container_id, config, update_label):
     will_use = set()
     for t in tools:
         will_use.add(t["via"])
+
+    # apt series
     if "apt" in will_use:
+        update_sublabel("Updating apt ...")
         bash_run("apt update")
-    if "apt-get" in will_use:
+    elif "apt-get" in will_use:
+        update_sublabel("Updating apt-get ...")
         bash_run("apt-get update")
 
     # init tools
@@ -53,6 +56,7 @@ def config_machine(container_id, config, update_label):
     for tool in tools:
         name = tool["name"]
         via = tool["via"]
+        update_sublabel("Installing " + name + " via " + via + " ...")
         if via == "apt":
             bash_run(f"apt install -y {name}")
         if via == "apt-get":
@@ -101,10 +105,11 @@ def start_machine(ipv3, port=10122):
 
     container_id = run(config["machine"], {22: port}, config["host"])
 
-    update_label = info_tk()
-    config_machine(container_id, config, update_label)
+    update_label, update_sublabel = info_tk()
+    config_machine(container_id, config, update_label, update_sublabel)
 
     return container_id
+
 
 def info_tk():
     import tkinter as tk
@@ -112,11 +117,11 @@ def info_tk():
     root = tk.Tk()
     root.title("Machine Initializing ...")
     root.geometry("300x50")
-
-    tk.Label(root, text="Progress").pack()
-
     label = tk.Label(root, text="Machine Initializing ...")
     label.pack()
+
+    label2 = tk.Label(root, text="Machine Initializing ...")
+    label2.pack()
 
     root.update()
     cnt = 0
@@ -131,8 +136,14 @@ def info_tk():
 
         label.config(text=f"[{cnt}/4] {text}")
         root.update()
+        update_label2("")
 
-    return update_label
+    def update_label2(text):
+        label2.config(text=f"{text}")
+        root.update()
+
+    return update_label, update_label2
+
 
 def stop_machine(container_id):
     client = docker.from_env()
