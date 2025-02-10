@@ -113,7 +113,12 @@ def start(combo, username):
     h = hash((shell, user))
 
     if h in activated_windows:
-        err.config(text="Shell already activated.")
+        # machine activated, reopen a shell
+        if sys.platform == "win32":
+            subprocess.Popen(
+                f'start cmd /k "ssh {user}@localhost -p {machine_port} & exit"',
+                shell=True,
+            )
         return
 
     if not checkValidUsername(shell_ip, user):

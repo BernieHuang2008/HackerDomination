@@ -49,7 +49,10 @@ void main_page()
 {
     int input2;
 
-    cout << "1. Starred     2. Starred     3. Starred" << endl;
+    cout<< "Welcome to Q-MAIL Mailbox! Choose a mailbox to view:" << endl;
+    cout << "1. Starred Mailbox" << endl;
+    cout << "2. All Mailbox" << endl;
+    cout << "3. Personal Mailbox" << endl;
     cout << "[ ]\b\b";
     cin >> input2;
     if (input2 >= 1 && input2 <= 3)
@@ -73,7 +76,7 @@ void main_page()
         cout << "| unhackable       | ***                 |" << endl;
         cout << "-----------------------------------------" << endl;
         cout << "Please keep it safe and NEVER FORGET!" << endl;
-        cout << "                                      Yours," << endl;
+        cout << "                                       Mine," << endl;
         cout << "                                   Peter Lee" << endl;
         cout << "============================================" << endl;
     }
